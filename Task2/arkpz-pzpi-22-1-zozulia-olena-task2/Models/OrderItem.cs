@@ -1,4 +1,4 @@
-﻿namespace SmartLunch.Models
+﻿namespace Models
 {
     public class OrderItem
     {

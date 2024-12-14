@@ -1,4 +1,4 @@
-﻿using SmartLunch.Enums;
+﻿using Enums;
 
 namespace SmartLunch.Models
 {
