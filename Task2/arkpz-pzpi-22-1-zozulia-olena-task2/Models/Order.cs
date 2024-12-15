@@ -10,6 +10,6 @@ namespace SmartLunch.Models
         public decimal TotalAmount { get; set; }
         public PaymentStatus PaymentStatus { get; set; }
         public DateTime Timestamp { get; set; }
-        public ICollection<OrderItem> Items { get; set; }
+        public ICollection<OrderItem>? Items { get; set; }
     }
 }

@@ -13,5 +13,6 @@ namespace SmartLunch.Models
         public string PasswordHash { get; set; }
         public UserRole Role { get; set; }
         public Guid CompanyId { get; set; }
+        public ICollection<Notification>? Notifications { get; set; }
     }
 }

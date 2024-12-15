@@ -7,6 +7,6 @@
         public string Address { get; set; }
         public string ContactEmail { get; set; }
         public Guid AdminId { get; set; }
-        public List<UserDto> Employees { get; set; }
+        public List<UserDto>? Employees { get; set; }
     }
 }

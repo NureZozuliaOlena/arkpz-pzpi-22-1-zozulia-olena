@@ -10,6 +10,6 @@ namespace Models.DTO
         public decimal TotalAmount { get; set; }
         public PaymentStatus PaymentStatus { get; set; }
         public DateTime Timestamp { get; set; }
-        public List<OrderItemDto> Items { get; set; }
+        public List<OrderItemDto>? Items { get; set; }
     }
 }

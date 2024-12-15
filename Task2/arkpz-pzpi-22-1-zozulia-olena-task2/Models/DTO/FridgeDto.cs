@@ -7,5 +7,6 @@
         public double CurrentTemperature { get; set; }
         public int InventoryLevel { get; set; }
         public DateTime LastRestocked { get; set; }
+        public List<FridgeInventoryDto>? FridgeInventories { get; set; }
     }
 }
