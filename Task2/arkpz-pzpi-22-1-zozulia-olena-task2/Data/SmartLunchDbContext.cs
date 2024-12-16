@@ -5,8 +5,8 @@ namespace Data
 {
     public class SmartLunchDbContext : DbContext
     {
-        public SmartLunchDbContext(DbContextOptions<SmartLunchDbContext> options) 
-            : base(options) 
+        public SmartLunchDbContext(DbContextOptions<SmartLunchDbContext> options)
+            : base(options)
         {
 
         }
@@ -24,38 +24,39 @@ namespace Data
         {
             modelBuilder.Entity<Company>()
                 .HasMany(c => c.Employees)
-                .WithOne()
-                .HasForeignKey(u => u.CompanyId)
+                .WithOne(u => u.Company)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Company>()
+                .HasMany(c => c.Fridges)
+                .WithOne(f => f.Company)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<User>()
+                .HasMany(u => u.Orders)
+                .WithOne(o => o.User)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Fridge>()
+                .HasMany(f => f.FridgeInventories)
+                .WithOne(fi => fi.Fridge)
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<FridgeInventory>()
                 .HasOne(fi => fi.FoodItem)
                 .WithMany()
-                .HasForeignKey(fi => fi.FoodItemId);
-
-            modelBuilder.Entity<FridgeInventory>()
-                .HasOne<Fridge>()
-                .WithMany()
-                .HasForeignKey(fi => fi.FridgeId);
+                .OnDelete(DeleteBehavior.SetNull);
 
             modelBuilder.Entity<OrderItem>()
-                .HasOne(oi => oi.FridgeInventory)
-                .WithMany()
-                .HasForeignKey(oi => oi.FridgeInventoryId);
-
-            modelBuilder.Entity<Order>()
-                .HasMany(o => o.Items)
-                .WithOne()
+                .HasOne(oi => oi.Order)
+                .WithMany(o => o.Items)
                 .HasForeignKey(oi => oi.OrderId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<User>()
-                .Property(u => u.Role)
-                .HasConversion<string>();
-
-            modelBuilder.Entity<Order>()
-                .Property(o => o.PaymentStatus)
-                .HasConversion<string>();
+            modelBuilder.Entity<Notification>()
+                .HasOne(n => n.User)
+                .WithMany(u => u.Notifications)
+                .HasForeignKey(n => n.UserId);
 
             base.OnModelCreating(modelBuilder);
         }
