@@ -13,8 +13,7 @@ namespace Helpers
                 Name = company.Name,
                 Address = company.Address,
                 ContactEmail = company.ContactEmail,
-                AdminId = company.AdminId,
-                Employees = company.Employees?.Select(MapToDto).ToList()
+                AdminId = company.AdminId
             };
         }
 
@@ -42,8 +41,7 @@ namespace Helpers
                 Email = user.Email,
                 PasswordHash = user.PasswordHash,
                 Role = user.Role,
-                CompanyId = user.CompanyId,
-                Notifications = user.Notifications?.Select(MapToDto).ToList()
+                CompanyId = user.CompanyId
             };
         }
 
@@ -59,8 +57,7 @@ namespace Helpers
                 Email = userDto.Email,
                 PasswordHash = userDto.PasswordHash,
                 Role = userDto.Role,
-                CompanyId = userDto.CompanyId,
-                Notifications = userDto.Notifications?.Select(MapToEntity).ToList()
+                CompanyId = userDto.CompanyId
             };
         }
 
@@ -96,8 +93,7 @@ namespace Helpers
                 CompanyId = fridge.CompanyId,
                 CurrentTemperature = fridge.CurrentTemperature,
                 InventoryLevel = fridge.InventoryLevel,
-                LastRestocked = fridge.LastRestocked,
-                FridgeInventories = fridge.FridgeInventories?.Select(MapToDto).ToList()
+                LastRestocked = fridge.LastRestocked
             };
         }
 
@@ -109,8 +105,7 @@ namespace Helpers
                 CompanyId = fridgeDto.CompanyId,
                 CurrentTemperature = fridgeDto.CurrentTemperature,
                 InventoryLevel = fridgeDto.InventoryLevel,
-                LastRestocked = fridgeDto.LastRestocked,
-                FridgeInventories = fridgeDto.FridgeInventories?.Select(MapToEntity).ToList()
+                LastRestocked = fridgeDto.LastRestocked
             };
         }
 
@@ -169,8 +164,7 @@ namespace Helpers
                 FridgeId = order.FridgeId,
                 TotalAmount = order.TotalAmount,
                 PaymentStatus = order.PaymentStatus,
-                Timestamp = order.Timestamp,
-                Items = order.Items?.Select(MapToDto).ToList()
+                Timestamp = order.Timestamp
             };
         }
 
@@ -183,8 +177,7 @@ namespace Helpers
                 FridgeId = orderDto.FridgeId,
                 TotalAmount = orderDto.TotalAmount,
                 PaymentStatus = orderDto.PaymentStatus,
-                Timestamp = orderDto.Timestamp,
-                Items = orderDto.Items?.Select(MapToEntity).ToList()
+                Timestamp = orderDto.Timestamp
             };
         }
 
