@@ -12,7 +12,6 @@ namespace Models.DTO
         public string Email { get; set; }
         public string PasswordHash { get; set; }
         public UserRole Role { get; set; }
-        public Guid CompanyId { get; set; }
-        public List<NotificationDto>? Notifications { get; set; }
+        public Guid? CompanyId { get; set; }
     }
 }
