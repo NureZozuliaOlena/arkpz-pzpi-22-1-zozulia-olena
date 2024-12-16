@@ -26,11 +26,13 @@ namespace Repositories
         public async Task AddAsync(FoodItem foodItem)
         {
             await _context.FoodItems.AddAsync(foodItem);
+            await _context.SaveChangesAsync();
         }
 
         public async Task UpdateAsync(FoodItem foodItem)
         {
             _context.FoodItems.Update(foodItem);
+            await _context.SaveChangesAsync();
         }
 
         public async Task DeleteAsync(Guid id)
@@ -39,6 +41,7 @@ namespace Repositories
             if (foodItem != null)
             {
                 _context.FoodItems.Remove(foodItem);
+                await _context.SaveChangesAsync();
             }
         }
     }

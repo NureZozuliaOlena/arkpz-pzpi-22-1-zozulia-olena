@@ -30,11 +30,13 @@ namespace Repositories
         public async Task AddAsync(Order order)
         {
             await _context.Orders.AddAsync(order);
+            await _context.SaveChangesAsync();
         }
 
         public async Task UpdateAsync(Order order)
         {
             _context.Orders.Update(order);
+            await _context.SaveChangesAsync();
         }
 
         public async Task DeleteAsync(Guid id)
@@ -43,6 +45,7 @@ namespace Repositories
             if (order != null)
             {
                 _context.Orders.Remove(order);
+                await _context.SaveChangesAsync();
             }
         }
     }

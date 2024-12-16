@@ -17,6 +17,7 @@ namespace Repositories
         {
             return await _context.OrderItems
                 .Include(oi => oi.FridgeInventory)
+                .Include(oi => oi.Order)
                 .FirstOrDefaultAsync(oi => oi.Id == id);
         }
 
@@ -24,17 +25,20 @@ namespace Repositories
         {
             return await _context.OrderItems
                 .Include(oi => oi.FridgeInventory)
+                .Include(oi => oi.Order)
                 .ToListAsync();
         }
 
         public async Task AddAsync(OrderItem orderItem)
         {
             await _context.OrderItems.AddAsync(orderItem);
+            await _context.SaveChangesAsync();
         }
 
         public async Task UpdateAsync(OrderItem orderItem)
         {
             _context.OrderItems.Update(orderItem);
+            await _context.SaveChangesAsync();
         }
 
         public async Task DeleteAsync(Guid id)
@@ -43,6 +47,7 @@ namespace Repositories
             if (orderItem != null)
             {
                 _context.OrderItems.Remove(orderItem);
+                await _context.SaveChangesAsync();
             }
         }
     }

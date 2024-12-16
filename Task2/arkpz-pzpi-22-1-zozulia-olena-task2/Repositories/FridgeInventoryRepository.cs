@@ -15,22 +15,30 @@ namespace Repositories
 
         public async Task<FridgeInventory> GetByIdAsync(Guid id)
         {
-            return await _context.FridgeInventories.FirstOrDefaultAsync(f => f.Id == id);
+            return await _context.FridgeInventories
+                                 .Include(fi => fi.Fridge)
+                                 .Include(fi => fi.FoodItem)
+                                 .FirstOrDefaultAsync(f => f.Id == id);
         }
 
         public async Task<IEnumerable<FridgeInventory>> GetAllAsync()
         {
-            return await _context.FridgeInventories.ToListAsync();
+            return await _context.FridgeInventories
+                                 .Include(fi => fi.Fridge)
+                                 .Include(fi => fi.FoodItem)
+                                 .ToListAsync();
         }
 
         public async Task AddAsync(FridgeInventory fridgeInventory)
         {
             await _context.FridgeInventories.AddAsync(fridgeInventory);
+            await _context.SaveChangesAsync();
         }
 
         public async Task UpdateAsync(FridgeInventory fridgeInventory)
         {
             _context.FridgeInventories.Update(fridgeInventory);
+            await _context.SaveChangesAsync();
         }
 
         public async Task DeleteAsync(Guid id)
@@ -39,6 +47,7 @@ namespace Repositories
             if (fridgeInventory != null)
             {
                 _context.FridgeInventories.Remove(fridgeInventory);
+                await _context.SaveChangesAsync();
             }
         }
     }
