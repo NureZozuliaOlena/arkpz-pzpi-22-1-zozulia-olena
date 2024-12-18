@@ -1,4 +1,4 @@
-﻿Міністерство освіти та науки України
+Міністерство освіти та науки України
 Харківський національний університет радіоелектроніки
 
 
@@ -24,6 +24,1412 @@
 1 МЕТА
      Розробити базу даних для серверної частини  програмної системи та прикладного програмного інтерфейсу.
 2 ЗАВДАННЯ
-     Розробити будову програмної системи. Створити UML діаграму прецедентів для серверної частини системи. Створити ER діаграму даних. Розробити базу даних (БД) програмної системи. Створити діаграму структури БД. Розробити функції роботи з БД (ORM або CoRM тощо). Розробити API (REST або GraphQL, gRPC тощо) для взаємодії серверної частини з клієнтами. Створити специфікацію розробленого API. Створити програмну реалізацію розробленого API та функцій роботи з БД. Перевірити роботу створеного програмного коду серверної частини системи. Завантажити або оновити (при потребі) створений програмний код у GitHub репозиторій для лабораторних робіт у гілку репозиторію main. Створити відеозапис тривалістю 7-9 хвилин з демонстрацією перевірки (тестування) описаної у розділі 3.1 Vision & Scope функціональності серверної частини. Завантажити створений відеозапис у свій канал для облікового запису в домені nure.ua на YouTube. Створити хронологічний опис (хвилина:секунда) демонстрації та додати цей опис до опису відео на YouTube. Створити звіт до лабораторної роботи. Вказати у звіті посилання на створений відеозапис на YouTube Експортувати створений звіт у формат PDF та завантажити його на платформу dl.nure.ua. Експортувати увесь створений звіт у текстовий файл з кодуванням UTF-8 та записати цей файл у GitHub репозиторій для лабораторних робіт.
+     Розробити будову програмної системи. Створити UML діаграму прецедентів для серверної частини системи. Створити ER діаграму даних. Розробити базу даних (БД) програмної системи. Створити діаграму структури БД. Розробити функції роботи з БД (ORM або CoRM тощо). Розробити API (REST або GraphQL, gRPC тощо) для взаємодії серверної частини з клієнтами. Створити специфікацію розробленого API. Створити програмну реалізацію розробленого API та функцій роботи з БД. 
 3 ХІД РОБОТИ
+     Для обраної теми проєкту я створила ASP .NET Core Web API, використовуючи СУБД MS SQL Server та Entity Framework Core для роботи з базою даних, зокрема для створення та застосування міграцій. У структурі проєкту було створено кілька папок: Models – для моделей бази даних, DTO (Data Transfer Objects) – для обміну даними між клієнтом і сервером, Enums – переліки, які використовуються при моделюванні даних, Data – для конфігурації взаємодії між серверною частиною та базою даних, Helpers – для реалізації допоміжних функцій, а саме для зіставлення даних між моделями та DTO, Controllers – для обробки HTTP-запитів та надання кінцевих точок API та Repositories – для забезпечення логіки взаємодії з базою даних.
+     Першим кроком було створення ER-діаграми бази даних системи, яка представлена на рисунку 1.
+
+     Рисунок 1 – ER-діаграма бази даних
+     Наступним етапом було створення діаграми Use Case, що наведена на рисунку 2.
      
+     Рисунок 2 – UML діаграма прецедентів для серверної частини
+     Також була створена діаграма структури бази даних, яка представлена на рисунку 3.
+
+     Рисунок 3 – Діаграма структури бази даних
+     Оскільки для проєкту використовується Swagger, специфікація API була згенерована автоматично і наведена в додатку А. Фрагменти програмного коду для демонстрації логіки взаємодії серверної частини з базою даних наведені в Додатку Б.1. Фрагменти програмного коду для демонстрації логіки взаємодії серверної частини з клієнтами наведені в Додатку Б.2.
+     Для демонстрації роботи API був створений відеозапис, у якому продемонстровано реалізацію основного функціоналу API для роботи з базою даних, з використанням Swagger для тестування HTTP-запитів. Посилання на відеозапис на YouTube: https://youtu.be/NosKQrCpz40. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+4 ВИСНОВКИ
+     У ході виконання лабораторної роботи я розробила базу даних для серверної частини  програмної системи та прикладного програмного інтерфейсу.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ДОДАТОК А
+Специфікація API
+  1 {
+  2   "openapi": "3.0.1",
+  3   "info": {
+  4     "title": "SmartLunch",
+  5     "version": "1.0"
+  6   },
+  7   "paths": {
+  8     "/api/Company": {
+  9       "get": {
+ 10         "tags": [
+ 11           "Company"
+ 12         ],
+ 13         "responses": {
+ 14           "200": {
+ 15             "description": "OK"
+ 16           }
+ 17         }
+ 18       },
+ 19       "post": {
+ 20         "tags": [
+ 21           "Company"
+ 22         ],
+ 23         "requestBody": {
+ 24           "content": {
+ 25             "application/json": {
+ 26               "schema": {
+ 27                 "$ref": "#/components/schemas/CompanyDto"
+ 28               }
+ 29             },
+ 30             "text/json": {
+ 31               "schema": {
+ 32                 "$ref": "#/components/schemas/CompanyDto"
+ 33               }
+ 34             },
+ 35             "application/*+json": {
+ 36               "schema": {
+ 37                 "$ref": "#/components/schemas/CompanyDto"
+ 38               }
+ 39             }
+ 40           }
+ 41         },
+ 42         "responses": {
+ 43           "200": {
+ 44             "description": "OK"
+ 45           }
+ 46         }
+ 47       }
+ 48     },
+ 49     "/api/Company/{id}": {
+ 50       "get": {
+ 51         "tags": [
+ 52           "Company"
+ 53         ],
+ 54         "parameters": [
+ 55           {
+ 56             "name": "id",
+ 57             "in": "path",
+ 58             "required": true,
+ 59             "schema": {
+ 60               "type": "string",
+ 61               "format": "uuid"
+ 62             }
+ 63           }
+ 64         ],
+ 65         "responses": {
+ 66           "200": {
+ 67             "description": "OK"
+ 68           }
+ 69         }
+ 70       },
+ 71       "put": {
+ 72         "tags": [
+ 73           "Company"
+ 74         ],
+ 75         "parameters": [
+ 76           {
+ 77             "name": "id",
+ 78             "in": "path",
+ 79             "required": true,
+ 80             "schema": {
+ 81               "type": "string",
+ 82               "format": "uuid"
+ 83             }
+ 84           }
+ 85         ],
+ 86         "requestBody": {
+ 87           "content": {
+ 88             "application/json": {
+ 89               "schema": {
+ 90                 "$ref": "#/components/schemas/CompanyDto"
+ 91               }
+ 92             },
+ 93             "text/json": {
+ 94               "schema": {
+ 95                 "$ref": "#/components/schemas/CompanyDto"
+ 96               }
+ 97             },
+ 98             "application/*+json": {
+ 99               "schema": {
+100                 "$ref": "#/components/schemas/CompanyDto"
+101               }
+102             }
+103           }
+104         },
+105         "responses": {
+106           "200": {
+107             "description": "OK"
+108           }
+109         }
+110       },
+111       "delete": {
+112         "tags": [
+113           "Company"
+114         ],
+115         "parameters": [
+116           {
+117             "name": "id",
+118             "in": "path",
+119             "required": true,
+120             "schema": {
+121               "type": "string",
+122               "format": "uuid"
+123             }
+124           }
+125         ],
+126         "responses": {
+127           "200": {
+128             "description": "OK"
+129           }
+130         }
+131       }
+132     },
+133     "/api/FoodItem": {
+134       "get": {
+135         "tags": [
+136           "FoodItem"
+137         ],
+138         "responses": {
+139           "200": {
+140             "description": "OK"
+141           }
+142         }
+143       },
+144       "post": {
+145         "tags": [
+146           "FoodItem"
+147         ],
+148         "requestBody": {
+149           "content": {
+150             "application/json": {
+151               "schema": {
+152                 "$ref": "#/components/schemas/FoodItemDto"
+153               }
+154             },
+155             "text/json": {
+156               "schema": {
+157                 "$ref": "#/components/schemas/FoodItemDto"
+158               }
+159             },
+160             "application/*+json": {
+161               "schema": {
+162                 "$ref": "#/components/schemas/FoodItemDto"
+163               }
+164             }
+165           }
+166         },
+167         "responses": {
+168           "200": {
+169             "description": "OK"
+170           }
+171         }
+172       }
+173     },
+174     "/api/FoodItem/{id}": {
+175       "get": {
+176         "tags": [
+177           "FoodItem"
+178         ],
+179         "parameters": [
+180           {
+181             "name": "id",
+182             "in": "path",
+183             "required": true,
+184             "schema": {
+185               "type": "string",
+186               "format": "uuid"
+187             }
+188           }
+189         ],
+190         "responses": {
+191           "200": {
+192             "description": "OK"
+193           }
+194         }
+195       },
+196       "put": {
+197         "tags": [
+198           "FoodItem"
+199         ],
+200         "parameters": [
+201           {
+202             "name": "id",
+203             "in": "path",
+204             "required": true,
+205             "schema": {
+206               "type": "string",
+207               "format": "uuid"
+208             }
+209           }
+210         ],
+211         "requestBody": {
+212           "content": {
+213             "application/json": {
+214               "schema": {
+215                 "$ref": "#/components/schemas/FoodItemDto"
+216               }
+217             },
+218             "text/json": {
+219               "schema": {
+220                 "$ref": "#/components/schemas/FoodItemDto"
+221               }
+222             },
+223             "application/*+json": {
+224               "schema": {
+225                 "$ref": "#/components/schemas/FoodItemDto"
+226               }
+227             }
+228           }
+229         },
+230         "responses": {
+231           "200": {
+232             "description": "OK"
+233           }
+234         }
+235       },
+236       "delete": {
+237         "tags": [
+238           "FoodItem"
+239         ],
+240         "parameters": [
+241           {
+242             "name": "id",
+243             "in": "path",
+244             "required": true,
+245             "schema": {
+246               "type": "string",
+247               "format": "uuid"
+248             }
+249           }
+250         ],
+251         "responses": {
+252           "200": {
+253             "description": "OK"
+254           }
+255         }
+256       }
+257     },
+258     "/api/Fridge": {
+259       "get": {
+260         "tags": [
+261           "Fridge"
+262         ],
+263         "responses": {
+264           "200": {
+265             "description": "OK"
+266           }
+267         }
+268       },
+269       "post": {
+270         "tags": [
+271           "Fridge"
+272         ],
+273         "requestBody": {
+274           "content": {
+275             "application/json": {
+276               "schema": {
+277                 "$ref": "#/components/schemas/FridgeDto"
+278               }
+279             },
+280             "text/json": {
+281               "schema": {
+282                 "$ref": "#/components/schemas/FridgeDto"
+283               }
+284             },
+285             "application/*+json": {
+286               "schema": {
+287                 "$ref": "#/components/schemas/FridgeDto"
+288               }
+289             }
+290           }
+291         },
+292         "responses": {
+293           "200": {
+294             "description": "OK"
+295           }
+296         }
+297       }
+298     },
+299     "/api/Fridge/{id}": {
+300       "get": {
+301         "tags": [
+302           "Fridge"
+303         ],
+304         "parameters": [
+305           {
+306             "name": "id",
+307             "in": "path",
+308             "required": true,
+309             "schema": {
+310               "type": "string",
+311               "format": "uuid"
+312             }
+313           }
+314         ],
+315         "responses": {
+316           "200": {
+317             "description": "OK"
+318           }
+319         }
+320       },
+321       "put": {
+322         "tags": [
+323           "Fridge"
+324         ],
+325         "parameters": [
+326           {
+327             "name": "id",
+328             "in": "path",
+329             "required": true,
+330             "schema": {
+331               "type": "string",
+332               "format": "uuid"
+333             }
+334           }
+335         ],
+336         "requestBody": {
+337           "content": {
+338             "application/json": {
+339               "schema": {
+340                 "$ref": "#/components/schemas/FridgeDto"
+341               }
+342             },
+343             "text/json": {
+344               "schema": {
+345                 "$ref": "#/components/schemas/FridgeDto"
+346               }
+347             },
+348             "application/*+json": {
+349               "schema": {
+350                 "$ref": "#/components/schemas/FridgeDto"
+351               }
+352             }
+353           }
+354         },
+355         "responses": {
+356           "200": {
+357             "description": "OK"
+358           }
+359         }
+360       },
+361       "delete": {
+362         "tags": [
+363           "Fridge"
+364         ],
+365         "parameters": [
+366           {
+367             "name": "id",
+368             "in": "path",
+369             "required": true,
+370             "schema": {
+371               "type": "string",
+372               "format": "uuid"
+373             }
+374           }
+375         ],
+376         "responses": {
+377           "200": {
+378             "description": "OK"
+379           }
+380         }
+381       }
+382     },
+383     "/api/FridgeInventory": {
+384       "get": {
+385         "tags": [
+386           "FridgeInventory"
+387         ],
+388         "responses": {
+389           "200": {
+390             "description": "OK"
+391           }
+392         }
+393       },
+394       "post": {
+395         "tags": [
+396           "FridgeInventory"
+397         ],
+398         "requestBody": {
+399           "content": {
+400             "application/json": {
+401               "schema": {
+402                 "$ref": "#/components/schemas/FridgeInventoryDto"
+403               }
+404             },
+405             "text/json": {
+406               "schema": {
+407                 "$ref": "#/components/schemas/FridgeInventoryDto"
+408               }
+409             },
+410             "application/*+json": {
+411               "schema": {
+412                 "$ref": "#/components/schemas/FridgeInventoryDto"
+413               }
+414             }
+415           }
+416         },
+417         "responses": {
+418           "200": {
+419             "description": "OK"
+420           }
+421         }
+422       }
+423     },
+424     "/api/FridgeInventory/{id}": {
+425       "get": {
+426         "tags": [
+427           "FridgeInventory"
+428         ],
+429         "parameters": [
+430           {
+431             "name": "id",
+432             "in": "path",
+433             "required": true,
+434             "schema": {
+435               "type": "string",
+436               "format": "uuid"
+437             }
+438           }
+439         ],
+440         "responses": {
+441           "200": {
+442             "description": "OK"
+443           }
+444         }
+445       },
+446       "put": {
+447         "tags": [
+448           "FridgeInventory"
+449         ],
+450         "parameters": [
+451           {
+452             "name": "id",
+453             "in": "path",
+454             "required": true,
+455             "schema": {
+456               "type": "string",
+457               "format": "uuid"
+458             }
+459           }
+460         ],
+461         "requestBody": {
+462           "content": {
+463             "application/json": {
+464               "schema": {
+465                 "$ref": "#/components/schemas/FridgeInventoryDto"
+466               }
+467             },
+468             "text/json": {
+469               "schema": {
+470                 "$ref": "#/components/schemas/FridgeInventoryDto"
+471               }
+472             },
+473             "application/*+json": {
+474               "schema": {
+475                 "$ref": "#/components/schemas/FridgeInventoryDto"
+476               }
+477             }
+478           }
+479         },
+480         "responses": {
+481           "200": {
+482             "description": "OK"
+483           }
+484         }
+485       },
+486       "delete": {
+487         "tags": [
+488           "FridgeInventory"
+489         ],
+490         "parameters": [
+491           {
+492             "name": "id",
+493             "in": "path",
+494             "required": true,
+495             "schema": {
+496               "type": "string",
+497               "format": "uuid"
+498             }
+499           }
+500         ],
+501         "responses": {
+502           "200": {
+503             "description": "OK"
+504           }
+505         }
+506       }
+507     },
+508     "/api/Notification": {
+509       "get": {
+510         "tags": [
+511           "Notification"
+512         ],
+513         "responses": {
+514           "200": {
+515             "description": "OK"
+516           }
+517         }
+518       },
+519       "post": {
+520         "tags": [
+521           "Notification"
+522         ],
+523         "requestBody": {
+524           "content": {
+525             "application/json": {
+526               "schema": {
+527                 "$ref": "#/components/schemas/NotificationDto"
+528               }
+529             },
+530             "text/json": {
+531               "schema": {
+532                 "$ref": "#/components/schemas/NotificationDto"
+533               }
+534             },
+535             "application/*+json": {
+536               "schema": {
+537                 "$ref": "#/components/schemas/NotificationDto"
+538               }
+539             }
+540           }
+541         },
+542         "responses": {
+543           "200": {
+544             "description": "OK"
+545           }
+546         }
+547       }
+548     },
+549     "/api/Notification/{id}": {
+550       "get": {
+551         "tags": [
+552           "Notification"
+553         ],
+554         "parameters": [
+555           {
+556             "name": "id",
+557             "in": "path",
+558             "required": true,
+559             "schema": {
+560               "type": "string",
+561               "format": "uuid"
+562             }
+563           }
+564         ],
+565         "responses": {
+566           "200": {
+567             "description": "OK"
+568           }
+569         }
+570       },
+571       "put": {
+572         "tags": [
+573           "Notification"
+574         ],
+575         "parameters": [
+576           {
+577             "name": "id",
+578             "in": "path",
+579             "required": true,
+580             "schema": {
+581               "type": "string",
+582               "format": "uuid"
+583             }
+584           }
+585         ],
+586         "requestBody": {
+587           "content": {
+588             "application/json": {
+589               "schema": {
+590                 "$ref": "#/components/schemas/NotificationDto"
+591               }
+592             },
+593             "text/json": {
+594               "schema": {
+595                 "$ref": "#/components/schemas/NotificationDto"
+596               }
+597             },
+598             "application/*+json": {
+599               "schema": {
+600                 "$ref": "#/components/schemas/NotificationDto"
+601               }
+602             }
+603           }
+604         },
+605         "responses": {
+606           "200": {
+607             "description": "OK"
+608           }
+609         }
+610       },
+611       "delete": {
+612         "tags": [
+613           "Notification"
+614         ],
+615         "parameters": [
+616           {
+617             "name": "id",
+618             "in": "path",
+619             "required": true,
+620             "schema": {
+621               "type": "string",
+622               "format": "uuid"
+623             }
+624           }
+625         ],
+626         "responses": {
+627           "200": {
+628             "description": "OK"
+629           }
+630         }
+631       }
+632     },
+633     "/api/Order": {
+634       "get": {
+635         "tags": [
+636           "Order"
+637         ],
+638         "responses": {
+639           "200": {
+640             "description": "OK"
+641           }
+642         }
+643       },
+644       "post": {
+645         "tags": [
+646           "Order"
+647         ],
+648         "requestBody": {
+649           "content": {
+650             "application/json": {
+651               "schema": {
+652                 "$ref": "#/components/schemas/OrderDto"
+653               }
+654             },
+655             "text/json": {
+656               "schema": {
+657                 "$ref": "#/components/schemas/OrderDto"
+658               }
+659             },
+660             "application/*+json": {
+661               "schema": {
+662                 "$ref": "#/components/schemas/OrderDto"
+663               }
+664             }
+665           }
+666         },
+667         "responses": {
+668           "200": {
+669             "description": "OK"
+670           }
+671         }
+672       }
+673     },
+674     "/api/Order/{id}": {
+675       "get": {
+676         "tags": [
+677           "Order"
+678         ],
+679         "parameters": [
+680           {
+681             "name": "id",
+682             "in": "path",
+683             "required": true,
+684             "schema": {
+685               "type": "string",
+686               "format": "uuid"
+687             }
+688           }
+689         ],
+690         "responses": {
+691           "200": {
+692             "description": "OK"
+693           }
+694         }
+695       },
+696       "put": {
+697         "tags": [
+698           "Order"
+699         ],
+700         "parameters": [
+701           {
+702             "name": "id",
+703             "in": "path",
+704             "required": true,
+705             "schema": {
+706               "type": "string",
+707               "format": "uuid"
+708             }
+709           }
+710         ],
+711         "requestBody": {
+712           "content": {
+713             "application/json": {
+714               "schema": {
+715                 "$ref": "#/components/schemas/OrderDto"
+716               }
+717             },
+718             "text/json": {
+719               "schema": {
+720                 "$ref": "#/components/schemas/OrderDto"
+721               }
+722             },
+723             "application/*+json": {
+724               "schema": {
+725                 "$ref": "#/components/schemas/OrderDto"
+726               }
+727             }
+728           }
+729         },
+730         "responses": {
+731           "200": {
+732             "description": "OK"
+733           }
+734         }
+735       },
+736       "delete": {
+737         "tags": [
+738           "Order"
+739         ],
+740         "parameters": [
+741           {
+742             "name": "id",
+743             "in": "path",
+744             "required": true,
+745             "schema": {
+746               "type": "string",
+747               "format": "uuid"
+748             }
+749           }
+750         ],
+751         "responses": {
+752           "200": {
+753             "description": "OK"
+754           }
+755         }
+756       }
+757     },
+758     "/api/OrderItem": {
+759       "get": {
+760         "tags": [
+761           "OrderItem"
+762         ],
+763         "responses": {
+764           "200": {
+765             "description": "OK"
+766           }
+767         }
+768       },
+769       "post": {
+770         "tags": [
+771           "OrderItem"
+772         ],
+773         "requestBody": {
+774           "content": {
+775             "application/json": {
+776               "schema": {
+777                 "$ref": "#/components/schemas/OrderItemDto"
+778               }
+779             },
+780             "text/json": {
+781               "schema": {
+782                 "$ref": "#/components/schemas/OrderItemDto"
+783               }
+784             },
+785             "application/*+json": {
+786               "schema": {
+787                 "$ref": "#/components/schemas/OrderItemDto"
+788               }
+789             }
+790           }
+791         },
+792         "responses": {
+793           "200": {
+794             "description": "OK"
+795           }
+796         }
+797       }
+798     },
+799     "/api/OrderItem/{id}": {
+800       "get": {
+801         "tags": [
+802           "OrderItem"
+803         ],
+804         "parameters": [
+805           {
+806             "name": "id",
+807             "in": "path",
+808             "required": true,
+809             "schema": {
+810               "type": "string",
+811               "format": "uuid"
+812             }
+813           }
+814         ],
+815         "responses": {
+816           "200": {
+817             "description": "OK"
+818           }
+819         }
+820       },
+821       "put": {
+822         "tags": [
+823           "OrderItem"
+824         ],
+825         "parameters": [
+826           {
+827             "name": "id",
+828             "in": "path",
+829             "required": true,
+830             "schema": {
+831               "type": "string",
+832               "format": "uuid"
+833             }
+834           }
+835         ],
+836         "requestBody": {
+837           "content": {
+838             "application/json": {
+839               "schema": {
+840                 "$ref": "#/components/schemas/OrderItemDto"
+841               }
+842             },
+843             "text/json": {
+844               "schema": {
+845                 "$ref": "#/components/schemas/OrderItemDto"
+846               }
+847             },
+848             "application/*+json": {
+849               "schema": {
+850                 "$ref": "#/components/schemas/OrderItemDto"
+851               }
+852             }
+853           }
+854         },
+855         "responses": {
+856           "200": {
+857             "description": "OK"
+858           }
+859         }
+860       },
+861       "delete": {
+862         "tags": [
+863           "OrderItem"
+864         ],
+865         "parameters": [
+866           {
+867             "name": "id",
+868             "in": "path",
+869             "required": true,
+870             "schema": {
+871               "type": "string",
+872               "format": "uuid"
+873             }
+874           }
+875         ],
+876         "responses": {
+877           "200": {
+878             "description": "OK"
+879           }
+880         }
+881       }
+882     },
+883     "/api/User": {
+884       "get": {
+885         "tags": [
+886           "User"
+887         ],
+888         "responses": {
+889           "200": {
+890             "description": "OK"
+891           }
+892         }
+893       },
+894       "post": {
+895         "tags": [
+896           "User"
+897         ],
+898         "requestBody": {
+899           "content": {
+900             "application/json": {
+901               "schema": {
+902                 "$ref": "#/components/schemas/UserDto"
+903               }
+904             },
+905             "text/json": {
+906               "schema": {
+907                 "$ref": "#/components/schemas/UserDto"
+908               }
+909             },
+910             "application/*+json": {
+911               "schema": {
+912                 "$ref": "#/components/schemas/UserDto"
+913               }
+914             }
+915           }
+916         },
+917         "responses": {
+918           "200": {
+919             "description": "OK"
+920           }
+921         }
+922       }
+923     },
+924     "/api/User/{id}": {
+925       "get": {
+926         "tags": [
+927           "User"
+928         ],
+929         "parameters": [
+930           {
+931             "name": "id",
+932             "in": "path",
+933             "required": true,
+934             "schema": {
+935               "type": "string",
+936               "format": "uuid"
+937             }
+938           }
+939         ],
+940         "responses": {
+941           "200": {
+942             "description": "OK"
+943           }
+944         }
+945       },
+946       "put": {
+947         "tags": [
+948           "User"
+949         ],
+950         "parameters": [
+951           {
+952             "name": "id",
+953             "in": "path",
+954             "required": true,
+955             "schema": {
+956               "type": "string",
+957               "format": "uuid"
+958             }
+959           }
+960         ],
+961         "requestBody": {
+962           "content": {
+963             "application/json": {
+964               "schema": {
+965                 "$ref": "#/components/schemas/UserDto"
+966               }
+967             },
+968             "text/json": {
+969               "schema": {
+970                 "$ref": "#/components/schemas/UserDto"
+971               }
+972             },
+973             "application/*+json": {
+974               "schema": {
+975                 "$ref": "#/components/schemas/UserDto"
+976               }
+977             }
+978           }
+979         },
+980         "responses": {
+981           "200": {
+982             "description": "OK"
+983           }
+984         }
+985       },
+986       "delete": {
+987         "tags": [
+988           "User"
+989         ],
+990         "parameters": [
+991           {
+992             "name": "id",
+993             "in": "path",
+994             "required": true,
+995             "schema": {
+996               "type": "string",
+997               "format": "uuid"
+998             }
+999           }
+1000         ],
+1001         "responses": {
+1002           "200": {
+1003             "description": "OK"
+1004           }
+1005         }
+1006       }
+1007     }
+1008   },
+1009   "components": {
+1010     "schemas": {
+1011       "CompanyDto": {
+1012         "type": "object",
+1013         "properties": {
+1014           "id": {
+1015             "type": "string",
+1016             "format": "uuid"
+1017           },
+1018           "name": {
+1019             "type": "string",
+1020             "nullable": true
+1021           },
+1022           "address": {
+1023             "type": "string",
+1024             "nullable": true
+1025           },
+1026           "contactEmail": {
+1027             "type": "string",
+1028             "nullable": true
+1029           },
+1030           "adminId": {
+1031             "type": "string",
+1032             "format": "uuid",
+1033             "nullable": true
+1034           }
+1035         },
+1036         "additionalProperties": false
+1037       },
+1038       "FoodItemDto": {
+1039         "type": "object",
+1040         "properties": {
+1041           "id": {
+1042             "type": "string",
+1043             "format": "uuid"
+1044           },
+1045           "name": {
+1046             "type": "string",
+1047             "nullable": true
+1048           },
+1049           "description": {
+1050             "type": "string",
+1051             "nullable": true
+1052           },
+1053           "price": {
+1054             "minimum": 0.01,
+1055             "type": "number",
+1056             "format": "double"
+1057           },
+1058           "isAvailable": {
+1059             "type": "boolean"
+1060           }
+1061         },
+1062         "additionalProperties": false
+1063       },
+1064       "FridgeDto": {
+1065         "type": "object",
+1066         "properties": {
+1067           "id": {
+1068             "type": "string",
+1069             "format": "uuid"
+1070           },
+1071           "companyId": {
+1072             "type": "string",
+1073             "format": "uuid"
+1074           },
+1075           "currentTemperature": {
+1076             "maximum": 50,
+1077             "minimum": -50,
+1078             "type": "number",
+1079             "format": "double"
+1080           },
+1081           "inventoryLevel": {
+1082             "maximum": 2147483647,
+1083             "minimum": 0,
+1084             "type": "integer",
+1085             "format": "int32"
+1086           },
+1087           "lastRestocked": {
+1088             "type": "string",
+1089             "format": "date-time"
+1090           }
+1091         },
+1092         "additionalProperties": false
+1093       },
+1094       "FridgeInventoryDto": {
+1095         "type": "object",
+1096         "properties": {
+1097           "id": {
+1098             "type": "string",
+1099             "format": "uuid"
+1100           },
+1101           "fridgeId": {
+1102             "type": "string",
+1103             "format": "uuid"
+1104           },
+1105           "foodItemId": {
+1106             "type": "string",
+1107             "format": "uuid",
+1108             "nullable": true
+1109           },
+1110           "quantity": {
+1111             "maximum": 2147483647,
+1112             "minimum": 0,
+1113             "type": "integer",
+1114             "format": "int32"
+1115           }
+1116         },
+1117         "additionalProperties": false
+1118       },
+1119       "NotificationDto": {
+1120         "type": "object",
+1121         "properties": {
+1122           "id": {
+1123             "type": "string",
+1124             "format": "uuid"
+1125           },
+1126           "title": {
+1127             "type": "string",
+1128             "nullable": true
+1129           },
+1130           "text": {
+1131             "type": "string",
+1132             "nullable": true
+1133           },
+1134           "dateTimeCreated": {
+1135             "type": "string",
+1136             "format": "date-time"
+1137           },
+1138           "userId": {
+1139             "type": "string",
+1140             "format": "uuid"
+1141           }
+1142         },
+1143         "additionalProperties": false
+1144       },
+1145       "OrderDto": {
+1146         "type": "object",
+1147         "properties": {
+1148           "id": {
+1149             "type": "string",
+1150             "format": "uuid"
+1151           },
+1152           "userId": {
+1153             "type": "string",
+1154             "format": "uuid",
+1155             "nullable": true
+1156           },
+1157           "fridgeId": {
+1158             "type": "string",
+1159             "format": "uuid"
+1160           },
+1161           "totalAmount": {
+1162             "minimum": 0.01,
+1163             "type": "number",
+1164             "format": "double"
+1165           },
+1166           "paymentStatus": {
+1167             "$ref": "#/components/schemas/PaymentStatus"
+1168           },
+1169           "timestamp": {
+1170             "type": "string",
+1171             "format": "date-time"
+1172           }
+1173         },
+1174         "additionalProperties": false
+1175       },
+1176       "OrderItemDto": {
+1177         "type": "object",
+1178         "properties": {
+1179           "id": {
+1180             "type": "string",
+1181             "format": "uuid"
+1182           },
+1183           "orderId": {
+1184             "type": "string",
+1185             "format": "uuid"
+1186           },
+1187           "fridgeInventoryId": {
+1188             "type": "string",
+1189             "format": "uuid"
+1190           },
+1191           "quantity": {
+1192             "maximum": 2147483647,
+1193             "minimum": 1,
+1194             "type": "integer",
+1195             "format": "int32"
+1196           },
+1197           "price": {
+1198             "minimum": 0.01,
+1199             "type": "number",
+1200             "format": "double"
+1201           }
+1202         },
+1203         "additionalProperties": false
+1204       },
+1205       "PaymentStatus": {
+1206         "enum": [
+1207           0,
+1208           1,
+1209           2,
+1210           3
+1211         ],
+1212         "type": "integer",
+1213         "format": "int32"
+1214       },
+1215       "UserDto": {
+1216         "type": "object",
+1217         "properties": {
+1218           "id": {
+1219             "type": "string",
+1220             "format": "uuid"
+1221           },
+1222           "firstName": {
+1223             "type": "string",
+1224             "nullable": true
+1225           },
+1226           "lastName": {
+1227             "type": "string",
+1228             "nullable": true
+1229           },
+1230           "dateOfBirth": {
+1231             "type": "string",
+1232             "format": "date-time"
+1233           },
+1234           "phoneNumber": {
+1235             "type": "string",
+1236             "nullable": true
+1237           },
+1238           "email": {
+1239             "type": "string",
+1240             "nullable": true
+1241           },
+1242           "passwordHash": {
+1243             "type": "string",
+1244             "nullable": true
+1245           },
+1246           "role": {
+1247             "$ref": "#/components/schemas/UserRole"
+1248           },
+1249           "companyId": {
+1250             "type": "string",
+1251             "format": "uuid",
+1252             "nullable": true
+1253           }
+1254         },
+1255         "additionalProperties": false
+1256       },
+1257       "UserRole": {
+1258         "enum": [
+1259           0,
+1260           1,
+1261           2
+1262         ],
+1263         "type": "integer",
+1264         "format": "int32"
+1265       }
+1266     }
+1267   }
+1268 }
+ДОДАТОК Б
+Фрагменти програмного коду
+     Б.1 Логіка взаємодії серверної частини з БД
+  1 public async Task<Company> GetByIdAsync(Guid id)
+  2 {
+  3     return await _context.Companies
+  4                          .Include(c => c.Employees)
+  5                          .Include(c => c.Fridges)
+  6                          .FirstOrDefaultAsync(c => c.Id == id);
+  7 }
+  8
+  9 public async Task<IEnumerable<Company>> GetAllAsync()
+ 10 {
+ 11     return await _context.Companies
+ 12                          .Include(c => c.Employees)
+ 13                          .Include(c => c.Fridges)
+ 14                          .ToListAsync();
+ 15 }
+ 16
+ 17 public async Task AddAsync(Company company)
+ 18 {
+ 19     await _context.Companies.AddAsync(company);
+ 20     await _context.SaveChangesAsync();
+ 21 }
+ 22
+ 23 public async Task UpdateAsync(Company company)
+ 24 {
+ 25     _context.Companies.Update(company);
+ 26     await _context.SaveChangesAsync();
+ 27 }
+ 28
+ 29 public async Task DeleteAsync(Guid id)
+ 30 {
+ 31     var company = await _context.Companies.FindAsync(id);
+ 32     if (company != null)
+ 33     {
+ 34         _context.Companies.Remove(company);
+ 35         await _context.SaveChangesAsync();
+ 36     }
+ 37 }
+     Б.2 Логіка взаємодії серверної частини з клієнтами
+  1 [HttpPost]
+  2 public async Task<IActionResult> Create([FromBody] CompanyDto companyDto)
+  3 {
+  4     if (!ModelState.IsValid)
+  5     {
+  6         return BadRequest(ModelState);
+  7     }
+  8
+  9     var company = MappingHelper.MapToEntity(companyDto);
+ 10     await _companyRepository.AddAsync(company);
+ 11
+ 12     var createdCompanyDto = MappingHelper.MapToDto(company);
+ 13     return CreatedAtAction(nameof(GetById), new { id = createdCompanyDto.Id }, createdCompanyDto);
+ 14 }
+ 15
+ 16 [HttpPut("{id}")]
+ 17 public async Task<IActionResult> Update(Guid id, [FromBody] CompanyDto companyDto)
+ 18 {
+ 19     if (!ModelState.IsValid)
+ 20     {
+ 21         return BadRequest(ModelState);
+ 22     }
+ 23
+ 24     var existingCompany = await _companyRepository.GetByIdAsync(id);
+ 25     if (existingCompany == null)
+ 26     {
+ 27         return NotFound();
+ 28     }
+ 29
+ 30     existingCompany.Name = companyDto.Name;
+ 31     existingCompany.Address = companyDto.Address;
+ 32     existingCompany.ContactEmail = companyDto.ContactEmail;
+ 33     existingCompany.AdminId = companyDto.AdminId;
+ 34
+ 35     await _companyRepository.UpdateAsync(existingCompany);
+ 36
+ 37     var updatedCompanyDto = MappingHelper.MapToDto(existingCompany);
+ 38     return Ok(updatedCompanyDto);
+ 39 }
+ 40
+ 41 [HttpDelete("{id}")]
+ 42 public async Task<IActionResult> Delete(Guid id)
+ 43 {
+ 44     var company = await _companyRepository.GetByIdAsync(id);
+ 45     if (company == null)
+ 46     {
+ 47         return NotFound();
+ 48     }
+ 49
+ 50     await _companyRepository.DeleteAsync(id);
+ 51     return NoContent();
+ 52 }
