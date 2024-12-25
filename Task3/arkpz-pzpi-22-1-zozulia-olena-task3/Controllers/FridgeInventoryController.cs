@@ -1,26 +1,40 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Helpers;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Models;
 using Models.DTO;
 using Repositories;
+using Service;
 
 namespace Controllers
 {
+    [Authorize(Roles = "Admin,Contractor")]
     [ApiController]
     [Route("api/[controller]")]
     public class FridgeInventoryController : ControllerBase
     {
         private readonly IFridgeInventoryRepository _fridgeInventoryRepository;
+        private readonly IFridgeRepository _fridgeRepository;
+        private readonly IMapper _mapper;
+        private readonly PredictionService _predictionService;
 
-        public FridgeInventoryController(IFridgeInventoryRepository fridgeInventoryRepository)
+        public FridgeInventoryController(
+            IFridgeInventoryRepository fridgeInventoryRepository,
+            IFridgeRepository fridgeRepository,
+            IMapper mapper,
+            PredictionService predictionService)
         {
             _fridgeInventoryRepository = fridgeInventoryRepository;
+            _fridgeRepository = fridgeRepository;
+            _mapper = mapper;
+            _predictionService = predictionService;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
             var fridgeInventories = await _fridgeInventoryRepository.GetAllAsync();
-            var fridgeInventoryDtos = fridgeInventories.Select(MappingHelper.MapToDto).ToList();
+            var fridgeInventoryDtos = _mapper.Map<List<FridgeInventoryDto>>(fridgeInventories);
             return Ok(fridgeInventoryDtos);
         }
 
@@ -33,7 +47,7 @@ namespace Controllers
                 return NotFound();
             }
 
-            var fridgeInventoryDto = MappingHelper.MapToDto(fridgeInventory);
+            var fridgeInventoryDto = _mapper.Map<FridgeInventoryDto>(fridgeInventory);
             return Ok(fridgeInventoryDto);
         }
 
@@ -45,10 +59,17 @@ namespace Controllers
                 return BadRequest(ModelState);
             }
 
-            var fridgeInventory = MappingHelper.MapToEntity(fridgeInventoryDto);
+            var fridge = await _fridgeRepository.GetByIdAsync(fridgeInventoryDto.FridgeId);
+            if (fridge == null)
+            {
+                return NotFound($"Fridge with ID {fridgeInventoryDto.FridgeId} not found.");
+            }
+
+            var fridgeInventory = _mapper.Map<FridgeInventory>(fridgeInventoryDto);
+
             await _fridgeInventoryRepository.AddAsync(fridgeInventory);
 
-            var createdFridgeInventoryDto = MappingHelper.MapToDto(fridgeInventory);
+            var createdFridgeInventoryDto = _mapper.Map<FridgeInventoryDto>(fridgeInventory);
             return CreatedAtAction(nameof(GetById), new { id = createdFridgeInventoryDto.Id }, createdFridgeInventoryDto);
         }
 
@@ -63,16 +84,20 @@ namespace Controllers
             var existingFridgeInventory = await _fridgeInventoryRepository.GetByIdAsync(id);
             if (existingFridgeInventory == null)
             {
-                return NotFound();
+                return NotFound($"FridgeInventory with ID {id} not found.");
             }
 
-            existingFridgeInventory.FridgeId = fridgeInventoryDto.FridgeId;
-            existingFridgeInventory.FoodItemId = fridgeInventoryDto.FoodItemId;
-            existingFridgeInventory.Quantity = fridgeInventoryDto.Quantity;
+            var fridge = await _fridgeRepository.GetByIdAsync(fridgeInventoryDto.FridgeId);
+            if (fridge == null)
+            {
+                return NotFound($"Fridge with ID {fridgeInventoryDto.FridgeId} not found.");
+            }
+
+            _mapper.Map(fridgeInventoryDto, existingFridgeInventory);
 
             await _fridgeInventoryRepository.UpdateAsync(existingFridgeInventory);
 
-            var updatedFridgeInventoryDto = MappingHelper.MapToDto(existingFridgeInventory);
+            var updatedFridgeInventoryDto = _mapper.Map<FridgeInventoryDto>(existingFridgeInventory);
             return Ok(updatedFridgeInventoryDto);
         }
 

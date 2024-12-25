@@ -1,26 +1,33 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Helpers;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Models;
 using Models.DTO;
 using Repositories;
 
 namespace Controllers
 {
+    [Authorize(Roles = "Admin,Contractor")]
     [ApiController]
     [Route("api/[controller]")]
     public class FridgeController : ControllerBase
     {
         private readonly IFridgeRepository _fridgeRepository;
+        private readonly ICompanyRepository _companyRepository;
+        private readonly IMapper _mapper;
 
-        public FridgeController(IFridgeRepository fridgeRepository)
+        public FridgeController(IFridgeRepository fridgeRepository, ICompanyRepository companyRepository, IMapper mapper)
         {
             _fridgeRepository = fridgeRepository;
+            _companyRepository = companyRepository;
+            _mapper = mapper;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
             var fridges = await _fridgeRepository.GetAllAsync();
-            var fridgeDtos = fridges.Select(MappingHelper.MapToDto).ToList();
+            var fridgeDtos = _mapper.Map<List<FridgeDto>>(fridges);
             return Ok(fridgeDtos);
         }
 
@@ -33,7 +40,7 @@ namespace Controllers
                 return NotFound();
             }
 
-            var fridgeDto = MappingHelper.MapToDto(fridge);
+            var fridgeDto = _mapper.Map<FridgeDto>(fridge);
             return Ok(fridgeDto);
         }
 
@@ -45,10 +52,19 @@ namespace Controllers
                 return BadRequest(ModelState);
             }
 
-            var fridge = MappingHelper.MapToEntity(fridgeDto);
+            var company = await _companyRepository.GetByIdAsync(fridgeDto.CompanyId);
+            if (company == null)
+            {
+                return BadRequest("Invalid CompanyId. Company does not exist.");
+            }
+
+            var fridge = _mapper.Map<Fridge>(fridgeDto);
+
+            fridge.Company = company;
+
             await _fridgeRepository.AddAsync(fridge);
 
-            var createdFridgeDto = MappingHelper.MapToDto(fridge);
+            var createdFridgeDto = _mapper.Map<FridgeDto>(fridge);
             return CreatedAtAction(nameof(GetById), new { id = createdFridgeDto.Id }, createdFridgeDto);
         }
 
@@ -66,14 +82,35 @@ namespace Controllers
                 return NotFound();
             }
 
-            existingFridge.CompanyId = fridgeDto.CompanyId;
-            existingFridge.CurrentTemperature = fridgeDto.CurrentTemperature;
-            existingFridge.InventoryLevel = fridgeDto.InventoryLevel;
-            existingFridge.LastRestocked = fridgeDto.LastRestocked;
+            var newCompany = await _companyRepository.GetByIdAsync(fridgeDto.CompanyId);
+            if (newCompany == null)
+            {
+                return BadRequest("Invalid CompanyId. Company does not exist.");
+            }
 
+            if (existingFridge.CompanyId != fridgeDto.CompanyId)
+            {
+                var oldCompany = await _companyRepository.GetByIdAsync(existingFridge.CompanyId);
+                if (oldCompany != null)
+                {
+                    oldCompany.Fridges?.Remove(existingFridge);
+                    await _companyRepository.UpdateAsync(oldCompany);
+                }
+
+                if (newCompany.Fridges == null)
+                {
+                    newCompany.Fridges = new List<Fridge>();
+                }
+
+                newCompany.Fridges.Add(existingFridge);
+            }
+
+            _mapper.Map(fridgeDto, existingFridge);
             await _fridgeRepository.UpdateAsync(existingFridge);
 
-            var updatedFridgeDto = MappingHelper.MapToDto(existingFridge);
+            await _companyRepository.UpdateAsync(newCompany);
+
+            var updatedFridgeDto = _mapper.Map<FridgeDto>(existingFridge);
             return Ok(updatedFridgeDto);
         }
 

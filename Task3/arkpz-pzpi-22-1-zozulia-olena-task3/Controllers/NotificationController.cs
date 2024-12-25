@@ -1,26 +1,36 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Helpers;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Models;
 using Models.DTO;
 using Repositories;
 
 namespace Controllers
 {
+    [Authorize(Roles = "Admin")]
     [ApiController]
     [Route("api/[controller]")]
     public class NotificationController : ControllerBase
     {
         private readonly INotificationRepository _notificationRepository;
+        private readonly IUserRepository _userRepository;
+        private readonly IMapper _mapper;
 
-        public NotificationController(INotificationRepository notificationRepository)
+        public NotificationController(
+            INotificationRepository notificationRepository,
+            IUserRepository userRepository,
+            IMapper mapper)
         {
             _notificationRepository = notificationRepository;
+            _userRepository = userRepository;
+            _mapper = mapper;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
             var notifications = await _notificationRepository.GetAllAsync();
-            var notificationDtos = notifications.Select(MappingHelper.MapToDto).ToList();
+            var notificationDtos = _mapper.Map<List<NotificationDto>>(notifications);
             return Ok(notificationDtos);
         }
 
@@ -33,7 +43,7 @@ namespace Controllers
                 return NotFound();
             }
 
-            var notificationDto = MappingHelper.MapToDto(notification);
+            var notificationDto = _mapper.Map<NotificationDto>(notification);
             return Ok(notificationDto);
         }
 
@@ -45,10 +55,22 @@ namespace Controllers
                 return BadRequest(ModelState);
             }
 
-            var notification = MappingHelper.MapToEntity(notificationDto);
+            if (notificationDto.UserId != Guid.Empty)
+            {
+                var user = await _userRepository.GetByIdAsync(notificationDto.UserId);
+                if (user == null)
+                {
+                    return BadRequest("Invalid UserId. User does not exist.");
+                }
+            }
+
+            var notification = _mapper.Map<Notification>(notificationDto);
+
+            notification.DateTimeCreated = DateTime.UtcNow;
+
             await _notificationRepository.AddAsync(notification);
 
-            var createdNotificationDto = MappingHelper.MapToDto(notification);
+            var createdNotificationDto = _mapper.Map<NotificationDto>(notification);
             return CreatedAtAction(nameof(GetById), new { id = createdNotificationDto.Id }, createdNotificationDto);
         }
 
@@ -63,17 +85,23 @@ namespace Controllers
             var existingNotification = await _notificationRepository.GetByIdAsync(id);
             if (existingNotification == null)
             {
-                return NotFound();
+                return NotFound("Notification not found.");
             }
 
-            existingNotification.Title = notificationDto.Title;
-            existingNotification.Text = notificationDto.Text;
-            existingNotification.DateTimeCreated = notificationDto.DateTimeCreated;
-            existingNotification.UserId = notificationDto.UserId;
+            if (notificationDto.UserId != Guid.Empty)
+            {
+                var user = await _userRepository.GetByIdAsync(notificationDto.UserId);
+                if (user == null)
+                {
+                    return BadRequest("Invalid UserId. User does not exist.");
+                }
+            }
+
+            _mapper.Map(notificationDto, existingNotification);
 
             await _notificationRepository.UpdateAsync(existingNotification);
 
-            var updatedNotificationDto = MappingHelper.MapToDto(existingNotification);
+            var updatedNotificationDto = _mapper.Map<NotificationDto>(existingNotification);
             return Ok(updatedNotificationDto);
         }
 

@@ -1,26 +1,31 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Helpers;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Models;
 using Models.DTO;
 using Repositories;
 
 namespace Controllers
 {
+    [Authorize(Roles = "Admin,Contractor")]
     [ApiController]
     [Route("api/[controller]")]
     public class FoodItemController : ControllerBase
     {
         private readonly IFoodItemRepository _foodItemRepository;
+        private readonly IMapper _mapper;
 
-        public FoodItemController(IFoodItemRepository foodItemRepository)
+        public FoodItemController(IFoodItemRepository foodItemRepository, IMapper mapper)
         {
             _foodItemRepository = foodItemRepository;
+            _mapper = mapper;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
             var foodItems = await _foodItemRepository.GetAllAsync();
-            var foodItemDtos = foodItems.Select(MappingHelper.MapToDto).ToList();
+            var foodItemDtos = _mapper.Map<List<FoodItemDto>>(foodItems);
             return Ok(foodItemDtos);
         }
 
@@ -33,7 +38,7 @@ namespace Controllers
                 return NotFound();
             }
 
-            var foodItemDto = MappingHelper.MapToDto(foodItem);
+            var foodItemDto = _mapper.Map<FoodItemDto>(foodItem);
             return Ok(foodItemDto);
         }
 
@@ -45,10 +50,11 @@ namespace Controllers
                 return BadRequest(ModelState);
             }
 
-            var foodItem = MappingHelper.MapToEntity(foodItemDto);
+            var foodItem = _mapper.Map<FoodItem>(foodItemDto);
+
             await _foodItemRepository.AddAsync(foodItem);
 
-            var createdFoodItemDto = MappingHelper.MapToDto(foodItem);
+            var createdFoodItemDto = _mapper.Map<FoodItemDto>(foodItem);
             return CreatedAtAction(nameof(GetById), new { id = createdFoodItemDto.Id }, createdFoodItemDto);
         }
 
@@ -66,14 +72,10 @@ namespace Controllers
                 return NotFound();
             }
 
-            existingFoodItem.Name = foodItemDto.Name;
-            existingFoodItem.Description = foodItemDto.Description;
-            existingFoodItem.Price = foodItemDto.Price;
-            existingFoodItem.IsAvailable = foodItemDto.IsAvailable;
-
+            _mapper.Map(foodItemDto, existingFoodItem);
             await _foodItemRepository.UpdateAsync(existingFoodItem);
 
-            var updatedFoodItemDto = MappingHelper.MapToDto(existingFoodItem);
+            var updatedFoodItemDto = _mapper.Map<FoodItemDto>(existingFoodItem);
             return Ok(updatedFoodItemDto);
         }
 
