@@ -1,10 +1,12 @@
 ﻿using Enums;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace Models.DTO
 {
     public class OrderDto
     {
+        [JsonIgnore]
         public Guid Id { get; set; }
         public Guid? UserId { get; set; }
         public Guid FridgeId { get; set; }
@@ -13,5 +15,8 @@ namespace Models.DTO
         public decimal TotalAmount { get; set; }
         public PaymentStatus PaymentStatus { get; set; }
         public DateTime Timestamp { get; set; }
+        
+        [JsonIgnore]
+        public ICollection<OrderItemDto> Items { get; set; } = new List<OrderItemDto>();
     }
 }

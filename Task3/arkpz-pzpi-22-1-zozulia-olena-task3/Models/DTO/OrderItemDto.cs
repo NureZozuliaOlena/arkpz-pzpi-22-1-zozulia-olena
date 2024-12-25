@@ -1,9 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace Models.DTO
 {
     public class OrderItemDto
     {
+        [JsonIgnore]
         public Guid Id { get; set; }
         public Guid OrderId { get; set; }
         public Guid FridgeInventoryId { get; set; }
