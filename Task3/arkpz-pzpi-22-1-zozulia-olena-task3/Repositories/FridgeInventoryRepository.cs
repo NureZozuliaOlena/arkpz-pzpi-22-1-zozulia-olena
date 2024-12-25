@@ -38,7 +38,8 @@ namespace Repositories
         public async Task UpdateAsync(FridgeInventory fridgeInventory)
         {
             _context.FridgeInventories.Update(fridgeInventory);
-            await _context.SaveChangesAsync();
+            var result = await _context.SaveChangesAsync();
+            Console.WriteLine(result);
         }
 
         public async Task DeleteAsync(Guid id)
