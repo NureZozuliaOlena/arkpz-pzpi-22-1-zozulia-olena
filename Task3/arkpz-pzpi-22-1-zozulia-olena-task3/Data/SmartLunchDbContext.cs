@@ -23,40 +23,58 @@ namespace Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Company>()
-                .HasMany(c => c.Employees)
-                .WithOne(u => u.Company)
-                .OnDelete(DeleteBehavior.Cascade);
+                .HasOne(c => c.Admin)
+                .WithMany()
+                .HasForeignKey(c => c.AdminId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<User>()
+                .HasOne(u => u.Company)
+                .WithMany(c => c.Employees)
+                .HasForeignKey(u => u.CompanyId)
+                .OnDelete(DeleteBehavior.SetNull);
 
             modelBuilder.Entity<Company>()
                 .HasMany(c => c.Fridges)
                 .WithOne(f => f.Company)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            modelBuilder.Entity<User>()
-                .HasMany(u => u.Orders)
-                .WithOne(o => o.User)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<Fridge>()
-                .HasMany(f => f.FridgeInventories)
-                .WithOne(fi => fi.Fridge)
+                .HasForeignKey(f => f.CompanyId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<FridgeInventory>()
                 .HasOne(fi => fi.FoodItem)
                 .WithMany()
+                .HasForeignKey(fi => fi.FoodItemId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<User>()
+                .HasMany(u => u.Orders)
+                .WithOne(o => o.User)
+                .HasForeignKey(o => o.UserId)
                 .OnDelete(DeleteBehavior.SetNull);
 
-            modelBuilder.Entity<OrderItem>()
-                .HasOne(oi => oi.Order)
-                .WithMany(o => o.Items)
+            modelBuilder.Entity<Order>()
+                .HasMany(o => o.Items)
+                .WithOne(oi => oi.Order)
                 .HasForeignKey(oi => oi.OrderId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Fridge>()
+                .HasMany(f => f.FridgeInventories)
+                .WithOne(fi => fi.Fridge)
+                .HasForeignKey(fi => fi.FridgeId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<OrderItem>()
+                .HasOne(oi => oi.FridgeInventory)
+                .WithMany()
+                .HasForeignKey(oi => oi.FridgeInventoryId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Notification>()
                 .HasOne(n => n.User)
                 .WithMany(u => u.Notifications)
-                .HasForeignKey(n => n.UserId);
+                .HasForeignKey(n => n.UserId)
+                .OnDelete(DeleteBehavior.SetNull);
 
             base.OnModelCreating(modelBuilder);
         }
