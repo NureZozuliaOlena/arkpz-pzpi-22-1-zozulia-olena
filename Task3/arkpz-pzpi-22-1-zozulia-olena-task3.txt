@@ -1,0 +1,173 @@
+Міністерство освіти та науки України
+Харківський національний університет радіоелектроніки
+
+
+Кафедра програмної інженерії
+
+
+ЗВІТ
+до лабораторної роботи №3
+з дисципліни “Аналіз та рефакторинг коду”
+
+
+Виконала ст. гр ПЗПІ-22-1
+Зозуля Олена Юріївна
+
+Перевірив
+ст. викладач кафедри ПІ
+Сокорчук Ігор Петрович
+
+
+
+
+Харків 2024
+1 МЕТА
+     Розробити бізнес-логіку та функції адміністрування серверної частини  програмної системи.
+2 ЗАВДАННЯ
+     Розробити бізнес логіку серверної частини програмної системи. Розробити функції адміністрування серверної частини програмної системи. Створити програмну реалізацію бізнес логіки та функцій адміністрування серверної частини. Перевірити роботу серверної частини системи.
+3 ХІД РОБОТИ
+	Реалізована система прогнозування та сповіщення автоматизує процес моніторингу залишків продуктів у холодильниках, фрагмент програмного коду наведено у додатку А.1. Сервіс аналізує поточні замовлення, враховує залишки та визначає середнє денне споживання продуктів на основі попередніх даних. На основі цих розрахунків прогнозується кількість днів до вичерпання запасів для кожного продукту. Якщо прогноз показує, що запаси можуть закінчитися найближчими днями, система формує сповіщення для відповідального користувача з роллю “Підрядник”.
+	Для забезпечення адміністрування системи в програмному коді реалізовано автоматичне створення системного адміністратора, який може виконувати резервне копіювання бази даних, фрагмент програмного коду наведено у додатку А.2.
+	Додатково була створена UML-діаграма діяльності конкретно для автоматизованої системи прогнозування для серверної частини, яка представлена на рисунку 1.
+
+Рисунок 1 – UML-діаграма діяльності
+     Також розроблена UML-діаграма взаємодії також для серверної частини для тієї ж самої системи, що наведена на рисунку 2.
+
+Рисунок 2 – UML-діаграма взаємодії
+     Для демонстрації функціоналу створено відеозапис, у якому представлено реалізацію роботи програмної системи. Посилання на відеозапис на YouTube: https://youtu.be/oRgmLqy6v2U. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ВИСНОВКИ
+     У ході виконання лабораторної роботи я розробила бізнес-логіку та функції адміністрування серверної частини  програмної системи.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ДОДАТОК А
+Фрагменти програмного коду
+	А.1 Бізнес-логіка (математичних методів обробки даних) серверної частини
+  1 public void PredictAndNotify()
+  2 {
+  3     var todayOrders = _context.Orders
+  4         .Include(o => o.Items)
+  5         .Where(o => o.Timestamp.Date == DateTime.Now.Date)
+  6         .ToList();
+  7 
+  8     var fridges = _context.Fridges
+  9         .Include(f => f.FridgeInventories)
+ 10         .ThenInclude(fi => fi.FoodItem)
+ 11         .ToList();
+ 12
+ 13     foreach (var fridge in fridges)
+ 14     {
+ 15         foreach (var inventory in fridge.FridgeInventories)
+ 16         {
+ 17             var fridgeOrders = todayOrders.Where(o => o.FridgeId == fridge.Id);
+ 18
+ 19             var totalSoldToday = fridgeOrders
+ 20                 .SelectMany(o => o.Items)
+ 21                 .Where(item => item.FridgeInventoryId == inventory.Id)
+ 22                 .Sum(item => item.Quantity);
+ 23
+ 24             int remainingStock = inventory.Quantity - totalSoldToday;
+ 25             if (remainingStock < 0) remainingStock = 0;
+ 26
+ 27             var historicalSales = _context.OrderItems
+ 28                 .Include(oi => oi.Order)
+ 29                 .Where(oi => oi.Order.FridgeId == fridge.Id && oi.FridgeInventoryId == inventory.Id)
+ 30                 .GroupBy(oi => oi.Order.Timestamp.Date)
+ 31                 .Select(g => new { Date = g.Key, TotalSold = g.Sum(oi => oi.Quantity) })
+ 32                 .ToList();
+ 33
+ 34             double averageDailyConsumption = historicalSales.Any()
+ 35                 ? historicalSales.Average(s => s.TotalSold)
+ 36                 : (totalSoldToday > 0 ? totalSoldToday : 1);
+ 37
+ 38             if (averageDailyConsumption > 0)
+ 39             {
+ 40                 int predictedDaysToDepletion = (int)Math.Ceiling((double)remainingStock / averageDailyConsumption);
+ 41
+ 42                 int notificationThresholdDays = 2;
+ 43
+ 44                 if (predictedDaysToDepletion <= notificationThresholdDays)
+ 45                 {
+ 46                     SendNotification(fridge, inventory, remainingStock);
+ 47                 }
+ 48             }
+ 49         }
+ 50     }
+ 51 }
+	А.2 Логіка адміністрування серверної частини
+  1 [HttpGet("create-backup")]
+  2 public async Task<IActionResult> CreateBackup([FromQuery] string folderPath)
+  3 {
+  4     if (string.IsNullOrEmpty(folderPath))
+  5     {
+  6         return BadRequest("Error! Folder path is not provided.");
+  7     }
+  8
+  9     if (!Directory.Exists(folderPath))
+ 10     {
+ 11         return BadRequest("Error! Specified folder does not exist.");
+ 12     }
+ 13
+ 14     string backupFilePath = Path.Combine(folderPath, "SmartLunchDatabaseBackup.bak");
+ 15
+ 16     try
+ 17     {
+ 18         using (var connection = new SqlConnection(_dbConnectionString))
+ 19         {
+ 20             await connection.OpenAsync();
+ 21             string query = @"
+ 22                 BACKUP DATABASE [SmartLunchDb]
+ 23                 TO DISK = @BackupPath
+ 24                 WITH FORMAT, INIT;";
+ 25
+ 26             using (var command = new SqlCommand(query, connection))
+ 27             {
+ 28                 command.Parameters.AddWithValue("@BackupPath", backupFilePath);
+ 29                 await command.ExecuteNonQueryAsync();
+ 30             }
+ 31         }
+ 32
+ 33         return Ok($"Backup created successfully at {backupFilePath}");
+ 34     }
+ 35     catch (Exception ex)
+ 36     {
+ 37         return StatusCode(500, $"Error creating backup: {ex.Message}");
+ 38     }
+ 39 }
+2
+
+
