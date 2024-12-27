@@ -61,6 +61,13 @@ namespace SmartLunch
             builder.Services.AddAutoMapper(typeof(MappingProfile));
             builder.Services.AddScoped<PredictionService>();
             builder.Services.AddScoped<AdminSeederService>();
+            builder.Services.AddCors(corsOptions => {
+                corsOptions.AddPolicy("AllowAll", policy => {
+                    policy.WithHeaders().AllowAnyHeader(); policy.WithHeaders().AllowCredentials();
+                    policy.WithOrigins().AllowAnyMethod()
+                       .AllowAnyHeader();
+                });
+            });
 
             var jwtSettings = builder.Configuration.GetSection("JwtSettings");
             var secretKey = Encoding.UTF8.GetBytes(jwtSettings["SecretKey"]);
@@ -101,6 +108,7 @@ namespace SmartLunch
 
             app.UseAuthorization();
 
+            app.UseCors("AllowAll");
 
             app.MapControllers();
 
