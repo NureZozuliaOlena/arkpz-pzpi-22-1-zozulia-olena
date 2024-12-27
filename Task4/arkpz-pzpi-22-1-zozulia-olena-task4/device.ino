@@ -3,7 +3,7 @@
 #include <OneWire.h>
 #include <DallasTemperature.h>
 
-// Визначення пінів для підключення сенсорів і світлодіодів
+// Р’РёР·РЅР°С‡РµРЅРЅСЏ РїС–РЅС–РІ РґР»СЏ РїС–РґРєР»СЋС‡РµРЅРЅСЏ СЃРµРЅСЃРѕСЂС–РІ С– СЃРІС–С‚Р»РѕРґС–РѕРґС–РІ
 #define TEMP_SENSOR_PIN 23
 #define POT_PIN 34
 #define DOOR_BUTTON_PIN 27
@@ -11,16 +11,16 @@
 #define DOOR_CLOSED_LED 4
 #define NETWORK_STATUS_LED 2
 
-OneWire oneWire(TEMP_SENSOR_PIN); // Ініціалізація OneWire для температурного сенсора
-DallasTemperature sensors(&oneWire); // Ініціалізація бібліотеки DallasTemperature
+OneWire oneWire(TEMP_SENSOR_PIN); // Р†РЅС–С†С–Р°Р»С–Р·Р°С†С–СЏ OneWire РґР»СЏ С‚РµРјРїРµСЂР°С‚СѓСЂРЅРѕРіРѕ СЃРµРЅСЃРѕСЂР°
+DallasTemperature sensors(&oneWire); // Р†РЅС–С†С–Р°Р»С–Р·Р°С†С–СЏ Р±С–Р±Р»С–РѕС‚РµРєРё DallasTemperature
 
-// Глобальні змінні для збереження налаштувань
+// Р“Р»РѕР±Р°Р»СЊРЅС– Р·РјС–РЅРЅС– РґР»СЏ Р·Р±РµСЂРµР¶РµРЅРЅСЏ РЅР°Р»Р°С€С‚СѓРІР°РЅСЊ
 String ssid, password, API_BASE_URL, FRIDGE_ID, JWT_TOKEN;
 bool lastButtonState = LOW;
 bool orderRequested = false;
 String currentOrderId = "";
 
-// Налаштування історії температур
+// РќР°Р»Р°С€С‚СѓРІР°РЅРЅСЏ С–СЃС‚РѕСЂС–С— С‚РµРјРїРµСЂР°С‚СѓСЂ
 #define HISTORY_SIZE 10
 double temperatureHistory[HISTORY_SIZE];
 int currentIndex = 0;
@@ -58,7 +58,7 @@ void loop() {
   delay(1500);
 }
 
-// Функція для запиту даних WiFi
+// Р¤СѓРЅРєС†С–СЏ РґР»СЏ Р·Р°РїРёС‚Сѓ РґР°РЅРёС… WiFi
 void promptForWiFiCredentials() {
   Serial.println("Enter SSID:");
   while (Serial.available() == 0) {}
@@ -71,7 +71,7 @@ void promptForWiFiCredentials() {
   password.trim();
 }
 
-// Функція для запиту базового URL API
+// Р¤СѓРЅРєС†С–СЏ РґР»СЏ Р·Р°РїРёС‚Сѓ Р±Р°Р·РѕРІРѕРіРѕ URL API
 void promptForAPIBaseURL() {
   Serial.println("Enter API Base URL:");
   while (Serial.available() == 0) {}
@@ -79,7 +79,7 @@ void promptForAPIBaseURL() {
   API_BASE_URL.trim();
 }
 
-// Функція для підключення до WiFi
+// Р¤СѓРЅРєС†С–СЏ РґР»СЏ РїС–РґРєР»СЋС‡РµРЅРЅСЏ РґРѕ WiFi
 void connectToWiFi() {
   if (WiFi.status() != WL_CONNECTED) {
     Serial.println("Connecting to WiFi...");
@@ -93,21 +93,21 @@ void connectToWiFi() {
   }
 }
 
-// Функція для запиту ID холодильника
+// Р¤СѓРЅРєС†С–СЏ РґР»СЏ Р·Р°РїРёС‚Сѓ ID С…РѕР»РѕРґРёР»СЊРЅРёРєР°
 void promptForFridgeID() {
   Serial.println("Enter Fridge ID:");
   while (Serial.available() == 0) {}
   FRIDGE_ID = Serial.readStringUntil('\n');
 }
 
-// Функція для запиту JWT токена
+// Р¤СѓРЅРєС†С–СЏ РґР»СЏ Р·Р°РїРёС‚Сѓ JWT С‚РѕРєРµРЅР°
 void promptForJWTToken() {
   Serial.println("Enter JWT Token:");
   while (Serial.available() == 0) {}
   JWT_TOKEN = Serial.readStringUntil('\n');
 }
 
-// Функція обробки стану дверей
+// Р¤СѓРЅРєС†С–СЏ РѕР±СЂРѕР±РєРё СЃС‚Р°РЅСѓ РґРІРµСЂРµР№
 void handleButtonPress() {
   bool currentButtonState = digitalRead(DOOR_BUTTON_PIN);
 
@@ -142,7 +142,7 @@ void handleButtonPress() {
   lastButtonState = currentButtonState;
 }
 
-// Функція обробки статусу холодильника
+// Р¤СѓРЅРєС†С–СЏ РѕР±СЂРѕР±РєРё СЃС‚Р°С‚СѓСЃСѓ С…РѕР»РѕРґРёР»СЊРЅРёРєР°
 void handleFridgeStatus() {
   double currentTemp = readTemperature();
   storeTemperature(currentTemp);
@@ -155,12 +155,12 @@ void handleFridgeStatus() {
   int inventoryLevel = readInventoryLevel();
   bool doorStatus = digitalRead(DOOR_BUTTON_PIN) == HIGH;
 
-  String logMessage = "Temperature: " + String(currentTemp) + "°C\n";
-  logMessage += "Average Temp: " + String(avg) + "°C, Variance: " + String(variance) + "\n";
+  String logMessage = "Temperature: " + String(currentTemp) + "В°C\n";
+  logMessage += "Average Temp: " + String(avg) + "В°C, Variance: " + String(variance) + "\n";
   logMessage += "Inventory Level: " + String(inventoryLevel) + "%\n";
 
   if (fluctuation > 5.0) {
-    logMessage += "WARNING: High temperature fluctuation detected (" + String(fluctuation) + "°C)!\n";
+    logMessage += "WARNING: High temperature fluctuation detected (" + String(fluctuation) + "В°C)!\n";
     sendFluctuationWarning(currentTemp, lastTemp);
   }
 
@@ -170,7 +170,7 @@ void handleFridgeStatus() {
   sendTemperatureLog();
 }
 
-// Функція оновлення статусу дверей
+// Р¤СѓРЅРєС†С–СЏ РѕРЅРѕРІР»РµРЅРЅСЏ СЃС‚Р°С‚СѓСЃСѓ РґРІРµСЂРµР№
 bool updateDoorStatus(String orderId) {
   if (orderId.length() == 0) return false;
 
@@ -198,7 +198,7 @@ bool updateDoorStatus(String orderId) {
   }
 }
 
-// Функція оновлення статусу холодильника (температура, рівень запасів і стан дверей)
+// Р¤СѓРЅРєС†С–СЏ РѕРЅРѕРІР»РµРЅРЅСЏ СЃС‚Р°С‚СѓСЃСѓ С…РѕР»РѕРґРёР»СЊРЅРёРєР° (С‚РµРјРїРµСЂР°С‚СѓСЂР°, СЂС–РІРµРЅСЊ Р·Р°РїР°СЃС–РІ С– СЃС‚Р°РЅ РґРІРµСЂРµР№)
 void updateFridgeStatus(double temperature, int inventoryLevel, bool doorStatus) {
   HTTPClient http;
   String url = API_BASE_URL + "/fridge/" + FRIDGE_ID + "/status";
@@ -223,25 +223,25 @@ void updateFridgeStatus(double temperature, int inventoryLevel, bool doorStatus)
   http.end();
 }
 
-// Функція зчитування температури з датчика
+// Р¤СѓРЅРєС†С–СЏ Р·С‡РёС‚СѓРІР°РЅРЅСЏ С‚РµРјРїРµСЂР°С‚СѓСЂРё Р· РґР°С‚С‡РёРєР°
 double readTemperature() {
   sensors.requestTemperatures();
   return sensors.getTempCByIndex(0);
 }
 
-// Функція зчитування рівня запасів з потенціометра
+// Р¤СѓРЅРєС†С–СЏ Р·С‡РёС‚СѓРІР°РЅРЅСЏ СЂС–РІРЅСЏ Р·Р°РїР°СЃС–РІ Р· РїРѕС‚РµРЅС†С–РѕРјРµС‚СЂР°
 int readInventoryLevel() {
   int potValue = analogRead(POT_PIN);
   return map(potValue, 0, 4095, 0, 100);
 }
 
-// Функція збереження нового значення температури в історії для подальшого аналізу
+// Р¤СѓРЅРєС†С–СЏ Р·Р±РµСЂРµР¶РµРЅРЅСЏ РЅРѕРІРѕРіРѕ Р·РЅР°С‡РµРЅРЅСЏ С‚РµРјРїРµСЂР°С‚СѓСЂРё РІ С–СЃС‚РѕСЂС–С— РґР»СЏ РїРѕРґР°Р»СЊС€РѕРіРѕ Р°РЅР°Р»С–Р·Сѓ
 void storeTemperature(double newTemp) {
   temperatureHistory[currentIndex] = newTemp;
   currentIndex = (currentIndex + 1) % HISTORY_SIZE;
 }
 
-// Функція розраховування середнього значення температури
+// Р¤СѓРЅРєС†С–СЏ СЂРѕР·СЂР°С…РѕРІСѓРІР°РЅРЅСЏ СЃРµСЂРµРґРЅСЊРѕРіРѕ Р·РЅР°С‡РµРЅРЅСЏ С‚РµРјРїРµСЂР°С‚СѓСЂРё
 double calculateAverage() {
   double sum = 0;
   for (int i = 0; i < HISTORY_SIZE; i++) {
@@ -250,7 +250,7 @@ double calculateAverage() {
   return sum / HISTORY_SIZE;
 }
 
-// Функція обчислення дисперсії температури
+// Р¤СѓРЅРєС†С–СЏ РѕР±С‡РёСЃР»РµРЅРЅСЏ РґРёСЃРїРµСЂСЃС–С— С‚РµРјРїРµСЂР°С‚СѓСЂРё
 double calculateVariance() {
   double avg = calculateAverage();
   double variance = 0;
@@ -260,7 +260,7 @@ double calculateVariance() {
   return variance / HISTORY_SIZE;
 }
 
-// Функція відправки журналу температури на сервер
+// Р¤СѓРЅРєС†С–СЏ РІС–РґРїСЂР°РІРєРё Р¶СѓСЂРЅР°Р»Сѓ С‚РµРјРїРµСЂР°С‚СѓСЂРё РЅР° СЃРµСЂРІРµСЂ
 void sendTemperatureLog() {
   HTTPClient http;
   String url = API_BASE_URL + "/fridge/" + FRIDGE_ID + "/temperature-log";
@@ -282,7 +282,7 @@ void sendTemperatureLog() {
   http.end();
 }
 
-// Функція відправки попередження про значне коливання температури на сервер
+// Р¤СѓРЅРєС†С–СЏ РІС–РґРїСЂР°РІРєРё РїРѕРїРµСЂРµРґР¶РµРЅРЅСЏ РїСЂРѕ Р·РЅР°С‡РЅРµ РєРѕР»РёРІР°РЅРЅСЏ С‚РµРјРїРµСЂР°С‚СѓСЂРё РЅР° СЃРµСЂРІРµСЂ
 void sendFluctuationWarning(double currentTemp, double lastTemp) {
   HTTPClient http;
   String url = API_BASE_URL + "/fridge/" + FRIDGE_ID + "/temperature-log";
@@ -293,7 +293,7 @@ void sendFluctuationWarning(double currentTemp, double lastTemp) {
   double fluctuation = abs(currentTemp - lastTemp);
   String payload = "{";
   payload += "\"Title\": \"Warning: High temperature fluctuation detected!\",";
-  payload += "\"Text\": \"Temperature fluctuated by " + String(fluctuation, 1) + "°C. Last: " + String(lastTemp, 1) + "°C, Current: " + String(currentTemp, 1) + "°C.\",";
+  payload += "\"Text\": \"Temperature fluctuated by " + String(fluctuation, 1) + "В°C. Last: " + String(lastTemp, 1) + "В°C, Current: " + String(currentTemp, 1) + "В°C.\",";
   payload += "\"Temperature\": " + String(currentTemp);
   payload += "}";
 
