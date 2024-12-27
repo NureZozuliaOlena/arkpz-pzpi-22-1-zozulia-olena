@@ -1,1 +1,158 @@
+Міністерство освіти та науки України
+Харківський національний університет радіоелектроніки
+
+
+Кафедра програмної інженерії
+
+
+ЗВІТ
+до лабораторної роботи №4
+з дисципліни “Аналіз та рефакторинг коду”
+
+
+Виконала ст. гр ПЗПІ-22-1
+Зозуля Олена Юріївна
+
+Перевірив
+ст. викладач кафедри ПІ
+Сокорчук Ігор Петрович
+
+
+
+
+Харків 2024
+1 МЕТА
+     Розробити програмне забезпечення для  IoT або SmartDevice пристрою, створеного на базі будь-якої поширеної на  сьогодні платформи, придатної для реалізації вбудованих систем (Embedded  System).
+2 ЗАВДАННЯ
+     Розробити будову програмного забезпечення ІоТ клієнта. Розробити бізнес логіку (математину обробку повʼязаних із предметною областю даних) та функції налаштування ІоТ клієнта. Створити програмну реалізацію бізнес логіки та функцій налаштування ІоТ клієнта. Перевірити роботу ІоТ клієнта.
+3 ХІД РОБОТИ
+     Для створення прототипу я використовувала онлайн-сервіс Wokwi (https://wokwi.com/), який дозволяє моделювати електронні схеми та працювати з різними компонентами. У своєму проєкті я використовувала наступні деталі: ESP32 – основна плата, на якій розміщені всі компоненти, LED1 – синій світлодіод, який індикує статус підключення до мережі, резистор R1 – використовується для обмеження струму до світлодіода LED1, температурний сенсор DS18B20 – сенсор для вимірювання температури, необхідний для моніторингу умов зберігання продуктів, VCC – джерело живлення для забезпечення роботи електронних компонентів, потенціометр – використовується для створення вхідних значень, що слугують рівнем запасів у холодильнику, кнопка – симулює відкриття дверей, LED2 та LED3 – два світлодіоди, що індикують стан дверей (відкриті/закриті), резистор R2 – обмежує струм до світлодіодів LED2 і LED3.
+     Для перевірки взаємодії між пристроєм і сервером я створила тунель через Pinggy (https://pinggy.io/), оскільки система ще не розгорнута. 
+     Задача з математичної обробки даних передбачає вимірювання температури з певною періодичністю. За допомогою отриманих значень температури обчислюються статистичні показники, такі як середнє значення, дисперсія та відхилення. Фрагмент програмного коду, що реалізує ці функції, наведено у додатку А.1.
+     Налаштування IoT-пристрою було здійснено через введення необхідних параметрів, таких як SSID, пароль та URL API у Wokwi, де користувач може ввести дані через інтерфейс. Фрагмент програмного коду, що реалізує цю функцію, наведено у додатку А.2.
+     Першим кроком була створена UML діаграма прецедентів, яка зображена на рисунку 1.
+
+     Рисунок 1 – UML діаграма прецедентів ІоТ-клієнта
+     Також була створена UML-діаграма діяльності для IoT-клієнта, яка представлена на рисунку 2.
+
+Рисунок 2 – UML-діаграма діяльності ІоТ-клієнта
+     Для демонстрації функціоналу створено відеозапис, у якому представлено реалізацію роботи пристрою. Посилання на відеозапис на YouTube: https://youtu.be/aGHXa-EZf-4.
+
+
+
+ВИСНОВКИ
+     У ході виконання лабораторної роботи я розробила програмне забезпечення для  IoT-пристрою, створеного на базі поширеної на  сьогодні платформи, придатної для реалізації вбудованих систем (Embedded  System).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ДОДАТОК А
+Фрагменти програмного коду
+     А.1 Бізнес-логіка (математичних методів обробки даних) ІоТ-клієнта
+  1 // Функція розраховування середнього значення температури
+  2 double calculateAverage() {
+  3   double sum = 0;
+  4   for (int i = 0; i < HISTORY_SIZE; i++) {
+  5     sum += temperatureHistory[i];
+  6   }
+  7   return sum / HISTORY_SIZE;
+  8 }
+  9
+ 10 // Функція обчислення дисперсії температури
+ 11 double calculateVariance() {
+ 12   double avg = calculateAverage();
+ 13   double variance = 0;
+ 14   for (int i = 0; i < HISTORY_SIZE; i++) {
+ 15     variance += (temperatureHistory[i] - avg) * (temperatureHistory[i] - avg);
+ 16   }
+ 17   return variance / HISTORY_SIZE;
+ 18 }
+ 19
+ 20 // Функція відправки журналу температури на сервер
+ 21 void sendTemperatureLog() {
+ 22   HTTPClient http;
+ 23   String url = API_BASE_URL + "/fridge/" + FRIDGE_ID + "/temperature-log";
+ 24   http.begin(url);
+ 25   http.addHeader("Content-Type", "application/json");
+ 26   http.addHeader("Authorization", "Bearer " + JWT_TOKEN);
+ 27
+ 28   String payload = "{";
+ 29   payload += "\"Temperature\": " + String(temperatureHistory[(currentIndex - 1 + HISTORY_SIZE) % HISTORY_SIZE]);
+ 30   payload += "}";
+ 31
+ 32   int httpResponseCode = http.POST(payload);
+ 33
+ 34   if (httpResponseCode > 0) {
+ 35     Serial.println("Temperature log sent: " + String(httpResponseCode));
+ 36   } else {
+ 37     Serial.println("Error sending log: " + String(httpResponseCode));
+ 38   }
+ 39   http.end();
+ 40 }
+ 41
+ 42 // Функція відправки попередження про значне коливання температури на сервер
+ 43 void sendFluctuationWarning(double currentTemp, double lastTemp) {
+ 44   HTTPClient http;
+ 45   String url = API_BASE_URL + "/fridge/" + FRIDGE_ID + "/temperature-log";
+ 46   http.begin(url);
+ 47   http.addHeader("Content-Type", "application/json");
+ 48   http.addHeader("Authorization", "Bearer " + JWT_TOKEN);
+ 49
+ 50   double fluctuation = abs(currentTemp - lastTemp);
+ 51   String payload = "{";
+ 52   payload += "\"Title\": \"Warning: High temperature fluctuation detected!\",";
+ 53   payload += "\"Text\": \"Temperature fluctuated by " + String(fluctuation, 1) + "°C. Last: " + String(lastTemp, 1) + "°C, Current: " + String(currentTemp, 1) + "°C.\",";    
+ 54   payload += "\"Temperature\": " + String(currentTemp);
+ 55   payload += "}";
+ 56
+ 57   int httpResponseCode = http.POST(payload);
+ 58
+ 59   if (httpResponseCode > 0) {
+ 60     Serial.println("Fluctuation warning sent: " + String(httpResponseCode));
+ 61   } else {
+ 62     Serial.println("Error sending warning: " + String(httpResponseCode));
+ 63   }
+ 64   http.end();
+ 65 }
+	А.2 Налаштування ІоТ-клієнта
+  1 // Глобальні змінні для збереження налаштувань
+  2 String ssid, password, API_BASE_URL, FRIDGE_ID, JWT_TOKEN;
+  3
+  4 // Функція для запиту даних WiFi
+  5 void promptForWiFiCredentials() {
+  6   Serial.println("Enter SSID:");
+  7   while (Serial.available() == 0) {}
+  8   ssid = Serial.readStringUntil('\n');
+  9   ssid.trim();
+ 10
+ 11   Serial.println("Enter Password:");
+ 12   while (Serial.available() == 0) {}
+ 13   password = Serial.readStringUntil('\n');
+ 14   password.trim();
+ 15 }
+ 16
+ 17 // Функція для запиту базового URL API
+ 18 void promptForAPIBaseURL() {
+ 19   Serial.println("Enter API Base URL:");
+ 20   while (Serial.available() == 0) {}
+ 21   API_BASE_URL = Serial.readStringUntil('\n');
+ 22   API_BASE_URL.trim();
+ 23 }
+2
+
 
