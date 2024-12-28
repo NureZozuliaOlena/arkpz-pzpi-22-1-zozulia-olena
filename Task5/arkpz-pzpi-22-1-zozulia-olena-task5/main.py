@@ -3,7 +3,7 @@ import json
 import subprocess
 import getpass
 
-# Функція для виконання команд в командному рядку
+# Р¤СѓРЅРєС†С–СЏ РґР»СЏ РІРёРєРѕРЅР°РЅРЅСЏ РєРѕРјР°РЅРґ РІ РєРѕРјР°РЅРґРЅРѕРјСѓ СЂСЏРґРєСѓ
 def execute_command(command, use_shell=False):
     try:
         result = subprocess.run(command, capture_output=True, text=True, shell=use_shell)
@@ -16,7 +16,7 @@ def execute_command(command, use_shell=False):
         print(f"Error while running command: {e}")
         return False
 
-# Функція для перевірки, чи встановлена програма
+# Р¤СѓРЅРєС†С–СЏ РґР»СЏ РїРµСЂРµРІС–СЂРєРё, С‡Рё РІСЃС‚Р°РЅРѕРІР»РµРЅР° РїСЂРѕРіСЂР°РјР°
 def check_if_installed(command):
     try:
         subprocess.run(command, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
@@ -24,7 +24,7 @@ def check_if_installed(command):
     except FileNotFoundError:
         return False
 
-# Функція для встановлення Chocolatey
+# Р¤СѓРЅРєС†С–СЏ РґР»СЏ РІСЃС‚Р°РЅРѕРІР»РµРЅРЅСЏ Chocolatey
 def install_chocolatey_package_manager():
     if check_if_installed("choco"):
         print("Chocolatey is already installed")
@@ -42,7 +42,7 @@ def install_chocolatey_package_manager():
     else:
         print("Failed to install Chocolatey")
 
-# Функція для встановлення .NET SDK
+# Р¤СѓРЅРєС†С–СЏ РґР»СЏ РІСЃС‚Р°РЅРѕРІР»РµРЅРЅСЏ .NET SDK
 def install_dotnet_sdk():
     if check_if_installed("dotnet --version"):
         print(".NET SDK is already installed")
@@ -56,7 +56,7 @@ def install_dotnet_sdk():
     else:
         print("Failed to install .NET SDK")
 
-# Функція для встановлення Microsoft SQL Server Management Studio
+# Р¤СѓРЅРєС†С–СЏ РґР»СЏ РІСЃС‚Р°РЅРѕРІР»РµРЅРЅСЏ Microsoft SQL Server Management Studio
 def install_sql_server_management_studio():
     if check_if_installed("ssms.exe"):
         print("Microsoft SQL Server Management Studio is already installed")
@@ -70,7 +70,7 @@ def install_sql_server_management_studio():
     else:
         print("Failed to install Microsoft SQL Server Management Studio")
 
-# Функція для оновлення файлу appsettings.json
+# Р¤СѓРЅРєС†С–СЏ РґР»СЏ РѕРЅРѕРІР»РµРЅРЅСЏ С„Р°Р№Р»Сѓ appsettings.json
 def modify_appsettings_file(file_path, db_name, host, user, password):
     try:
         print(f"Attempting to update {file_path}...")
@@ -101,7 +101,7 @@ def modify_appsettings_file(file_path, db_name, host, user, password):
     except Exception as e:
         print(f"An unexpected error occurred while updating {file_path}: {e}")
 
-# Функція для знаходження резервної копії
+# Р¤СѓРЅРєС†С–СЏ РґР»СЏ Р·РЅР°С…РѕРґР¶РµРЅРЅСЏ СЂРµР·РµСЂРІРЅРѕС— РєРѕРїС–С—
 def locate_latest_backup(directory, extension=".bak"):
     try:
         files = [f for f in os.listdir(directory) if f.endswith(extension)]
@@ -113,7 +113,7 @@ def locate_latest_backup(directory, extension=".bak"):
         print(f"Error: {e}")
         return None
 
-# Функція для відновлення бази даних з резервної копії
+# Р¤СѓРЅРєС†С–СЏ РґР»СЏ РІС–РґРЅРѕРІР»РµРЅРЅСЏ Р±Р°Р·Рё РґР°РЅРёС… Р· СЂРµР·РµСЂРІРЅРѕС— РєРѕРїС–С—
 def restore_database_from_backup(backup_file, db_name, server, user, password):
     print("Restoring the database...")
 
@@ -135,7 +135,7 @@ def restore_database_from_backup(backup_file, db_name, server, user, password):
     print("Successfully restored the database")
     return True
 
-# Основна функція
+# РћСЃРЅРѕРІРЅР° С„СѓРЅРєС†С–СЏ
 def main():
     install_chocolatey_package_manager()
     install_dotnet_sdk()
