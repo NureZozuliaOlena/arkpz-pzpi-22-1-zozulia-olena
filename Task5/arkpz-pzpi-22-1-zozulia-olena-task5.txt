@@ -1,1 +1,123 @@
+Міністерство освіти та науки України
+Харківський національний університет радіоелектроніки
+
+
+Кафедра програмної інженерії
+
+
+ЗВІТ
+до лабораторної роботи №5
+з дисципліни “Аналіз та рефакторинг коду”
+
+
+Виконала ст. гр ПЗПІ-22-1
+Зозуля Олена Юріївна
+
+Перевірив
+ст. викладач кафедри ПІ
+Сокорчук Ігор Петрович
+
+
+
+
+Харків 2024
+1 МЕТА
+     Розгорнути програмну систему та продемонструвати її роботу.
+2 ЗАВДАННЯ
+     Розгорнути реалізовану програмну систему. Перевірити та налаштувати роботу розгорнутої програмної системи.
+3 ХІД РОБОТИ
+     Було створено скрипт, який автоматизує налаштування середовища для роботи з базою даних, інсталяцію необхідного програмного забезпечення, відновлення бази даних з резервної копії та оновлення конфігураційного файлу, фрагмент програмного коду наведено у додатку А.
+     Спочатку скрипт перевіряє, чи встановлений Chocolatey. Якщо він відсутній, то автоматично встановлюється через PowerShell. Потім скрипт перевіряє, чи є на комп'ютері .NET SDK та Microsoft SQL Server Management Studio, і якщо їх немає, він також встановлює їх за допомогою Chocolatey. Далі скрипт шукає резервну копію бази даних у вказаному каталозі. Якщо копія знайдена, він запитує в користувача пароль для підключення до SQL Server і запускає команду для відновлення бази даних. Процес відновлення включає скидання поточної бази даних та відновлення її з резервної копії.
+     Після відновлення бази даних скрипт оновлює конфігураційний файл appsettings.json, додаючи або змінюючи рядок підключення до бази даних, що включає сервер, ім'я бази даних і облікові дані для підключення. 
+     Для демонстрації створено відеозапис, у якому представлено роботу скрипту і як виглядає система в цілому. Посилання на відеозапис на YouTube: https://youtu.be/664Nd7KXIDA.
+
+
+ВИСНОВКИ
+     У ході виконання лабораторної роботи я розгорнула програмну систему та продемонструвала її роботу.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ДОДАТОК А
+Фрагменти програмного коду
+  1 # Функція для встановлення Chocolatey
+  2 def install_chocolatey_package_manager():
+  3     if check_if_installed("choco"):
+  4         print("Chocolatey is already installed")
+  5         return
+  6
+  7     print("Installing Chocolatey...")
+  8     choco_install_command = (
+  9         "%SystemRoot%\\System32\\WindowsPowerShell\\v1.0\\powershell.exe -NoProfile -InputFormat None -ExecutionPolicy Bypass "
+ 10         "-Command \"iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))\" " 
+ 11         "&& SET \"PATH=%PATH%;%ALLUSERSPROFILE%\\chocolatey\\bin\""
+ 12     )
+ 13
+ 14     if execute_command(choco_install_command, use_shell=True):
+ 15         print("Chocolatey installed successfully")
+ 16     else:
+ 17         print("Failed to install Chocolatey")
+ 18
+ 19 # Функція для встановлення .NET SDK
+ 20 def install_dotnet_sdk():
+ 21     if check_if_installed("dotnet --version"):
+ 22         print(".NET SDK is already installed")
+ 23         return
+ 24
+ 25     print("Installing .NET SDK...")
+ 26     dotnet_install_command = "choco install dotnet-sdk --yes"
+ 27
+ 28     if execute_command(dotnet_install_command, use_shell=True):
+ 29         print(".NET SDK installed successfully")
+ 30     else:
+ 31         print("Failed to install .NET SDK")
+ 32
+ 33 # Функція для оновлення файлу appsettings.json
+ 34 def modify_appsettings_file(file_path, db_name, host, user, password):
+ 35     try:
+ 36         print(f"Attempting to update {file_path}...")
+ 37         with open(file_path, "r") as file:
+ 38             config = json.load(file)
+ 39             print(f"Current appsettings.json content: {config}")
+ 40
+ 41         connection_string = (
+ 42             f"Server={host};Database={db_name};User Id={user};Password={password};"
+ 43             "Encrypt=True;TrustServerCertificate=True"
+ 44         )
+ 45
+ 46         if "ConnectionStrings" not in config:
+ 47             config["ConnectionStrings"] = {}
+ 48
+ 49         config["ConnectionStrings"]["DefaultConnection"] = connection_string
+ 50
+ 51         with open(file_path, "w") as file:
+ 52             json.dump(config, file, indent=4)
+ 53
+ 54         print(f"Successfully updated the file: {file_path}")
+ 55     except FileNotFoundError:
+ 56         print(f"The configuration file {file_path} could not be located.")
+ 57     except json.JSONDecodeError as e:
+ 58         print(f"Failed to parse JSON in the file {file_path}: {e}")
+ 59     except PermissionError:
+ 60         print(f"Access denied while attempting to modify {file_path}. Please verify permissions.")
+ 61     except Exception as e:
+ 62         print(f"An unexpected error occurred while updating {file_path}: {e}")
+2
+
 
